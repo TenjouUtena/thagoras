@@ -11,4 +11,4 @@ class World():
 		self.password = ""
 
 	def send(self, line):
-		self.telnet.write(line)
+		self.telnet.write(str(line))

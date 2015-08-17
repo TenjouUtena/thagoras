@@ -4,7 +4,8 @@
 #
 
 import wx
-import wx.stc as stc
+#import wx.stc as stc
+import wx.richtext as richtext
 # begin wxGlade: dependencies
 # end wxGlade
 
@@ -23,7 +24,7 @@ class ThagWorldFrame(wx.Frame):
         self.thag_world_frame_menubar = wx.MenuBar()
         self.SetMenuBar(self.thag_world_frame_menubar)
         # Menu Bar end
-        self.text_output = stc.StyledTextCtrl(self, wx.ID_ANY)
+        self.text_output = richtext.RichTextCtrl(self, wx.ID_ANY)
         self.output = wx.TextCtrl(self, wx.ID_ANY, "", style=wx.TE_PROCESS_ENTER)
         self.button_1 = wx.Button(self, wx.ID_ANY, "Send")
 
@@ -34,12 +35,16 @@ class ThagWorldFrame(wx.Frame):
         self.Bind(wx.EVT_BUTTON, self.OnSend, self.button_1)
         # end wxGlade
 
+        #self.text_output.SetUseHorizontalScrollBar(0)
+        #self.text_output.SetWrapMode(stc.STC_WRAP_WORD)
+
         self.telnet = None
 
     def __set_properties(self):
         # begin wxGlade: ThagWorldFrame.__set_properties
         self.SetTitle("frame_3")
         # end wxGlade
+        self.SetTitle(self.world.name)
 
     def __do_layout(self):
         # begin wxGlade: ThagWorldFrame.__do_layout
@@ -56,16 +61,17 @@ class ThagWorldFrame(wx.Frame):
         # end wxGlade
 
     def writeLine(self, line):
-        self.text_output.AddText(line)
-        self.text_output.AddText("\n")
+        self.text_output.AppendText(line)
+        self.text_output.AppendText("\n")
+
+        #self.text_output.ScrollToLine(self.text_output(GetLineCount()))
+        self.text_output.ShowPosition(self.text_output.LastPosition)
 
     def OnSend(self, event):  # wxGlade: ThagWorldFrame.<event_handler>
         tts = self.output.GetLineText(0)
+
+        ## Let the world handle the text output.
         self.world.send(tts)
-
-        #if(self.telnet):
-        #    self.telnet.write(str(tts))
-
         self.output.Clear()
 
 # end of class ThagWorldFrame
