@@ -7,6 +7,7 @@ wxreactor.install()
 
 from gui import ThagMainFrame
 from obj import World
+from util import settings
 
 # import twisted reactor *only after* installing wxreactor
 from twisted.internet import reactor, protocol
@@ -26,7 +27,12 @@ if __name__ == "__main__":
 
     worlds = []
 
-    worlds.append(World("Penn - Asuka","penultimatemush.com",9500))
+    data = settings.LoadSafe()
+    if(data):
+        worlds = data[0]
+
+    #Debug World:
+    #worlds.append(World("Penn - Asuka","penultimatemush.com",9500))
 
     app = Thagoras(0)
     thag_main_frame = ThagMainFrame(None, wx.ID_ANY, "",worlds=worlds)

@@ -41,9 +41,8 @@ class TelnetClient(StatefulTelnetProtocol):
         gui = self.factory.gui
         world = self.factory.world 
 
-        world.gui = gui
         world.telnet = self
-        
+
         if(gui):
         	gui.telnet = self
 
