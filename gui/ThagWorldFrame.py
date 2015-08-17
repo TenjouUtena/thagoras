@@ -22,3 +22,16 @@ class ThagWorldFrame(ThagWorldFrameBase):
         self.world.send(tts)
         self.output.Clear()
 
+class ThagWorldDialog(ThagWorldDialogBase):
+    def __init__(self, parent):
+        ThagWorldDialogBase.__init__(self, parent)
+
+        self.char_list.InsertColumn(0, "Character")
+        self.char_list.InsertColumn(1, "Password")
+
+
+
+    def OnCharSelect(self, event):
+        pass
+
+

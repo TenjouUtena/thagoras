@@ -1,7 +1,9 @@
 import wx
 import net.net as net
-from ThagWorldFrame import ThagWorldFrame
+from ThagWorldFrame import ThagWorldFrame, ThagWorldDialog
 from ThagGuiBase import *
+
+
 from util import settings
 
 
@@ -25,7 +27,6 @@ class ThagMainFrame(ThagMainFrameBase):
         self.makeWorldMenus()
 
 
-
     def makeWorldMenus(self):
         if(self.worlds):
             for ww in self.worlds:
@@ -38,6 +39,15 @@ class ThagMainFrame(ThagMainFrameBase):
                 self.edit_menu.AppendItem(submenu2)
                 self.Bind(wx.EVT_MENU, lambda evt, world=ww: self.DoEdit(evt, world), submenu2)
                 self.editmenus.append(submenu2)
+
+    def destroyWorldMenus(self):
+        for o in self.connectmenus:
+            self.connect_menu.Delete(o.GetId())
+
+        for o in self.editmenus:
+            self.edit_menu.Delete(o.GetId())
+
+
                 
     def DoConnect(self, event, world):
         ## Create window
@@ -49,11 +59,11 @@ class ThagMainFrame(ThagMainFrameBase):
 
     def DoEdit(self, event, world):
         dlg = ThagWorldDialog(self)
+
         ## Setup Dialog in here....
         dlg.world_name.SetValue(world.name)
         dlg.world_address.SetValue(world.address)
         dlg.world_port.SetValue(str(world.port))
-        #dlg.world_name.SetValue(world.name)
 
         dlg.ShowModal();
 
@@ -63,7 +73,12 @@ class ThagMainFrame(ThagMainFrameBase):
         dlg.ShowModal();
 
     def DoLoad(self, event):
-        pass
+        self.destroyWorldMenus()
+        data = settings.Load()
+        if(data):
+            worlds = data[0]
+
+        self.makeWorldMenus()
 
     def DoSave(self, event):
         settings.Save(self.worlds)

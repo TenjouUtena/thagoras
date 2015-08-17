@@ -1,2 +1,2 @@
 from ThagMainFrame import ThagMainFrame
-from ThagWorldFrame import ThagWorldFrame
+from ThagWorldFrame import ThagWorldFrame, ThagWorldDialog
