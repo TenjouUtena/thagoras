@@ -47,7 +47,12 @@ class ThagMainFrame(ThagMainFrameBase):
         for o in self.editmenus:
             self.edit_menu.Delete(o.GetId())
 
+        self.connectmenus = []
+        self.editmenus = []
 
+    def refresh(self):
+        self.destroyWorldMenus()
+        self.makeWorldMenus()
                 
     def DoConnect(self, event, world):
         ## Create window
@@ -60,12 +65,13 @@ class ThagMainFrame(ThagMainFrameBase):
     def DoEdit(self, event, world):
         dlg = ThagWorldDialog(self)
 
-        ## Setup Dialog in here....
-        dlg.world_name.SetValue(world.name)
-        dlg.world_address.SetValue(world.address)
-        dlg.world_port.SetValue(str(world.port))
+        dlg.fillForm(world)
 
-        dlg.ShowModal();
+        if dlg.ShowModal() == wx.ID_OK:
+            dlg.writeObj(world)
+            self.refresh()
+
+
 
 
     def OnNewWorld(self, event):

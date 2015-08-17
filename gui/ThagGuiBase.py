@@ -226,6 +226,9 @@ class ThagWorldDialogBase ( wx.Dialog ):
 		self.m_button4 = wx.Button( self, wx.ID_ANY, u"Remove", wx.DefaultPosition, wx.DefaultSize, 0 )
 		bSizer7.Add( self.m_button4, 0, wx.ALL, 5 )
 		
+		self.m_button5 = wx.Button( self, wx.ID_ANY, u"Advanced...", wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer7.Add( self.m_button5, 0, wx.ALL, 5 )
+		
 		
 		bSizer5.Add( bSizer7, 1, wx.EXPAND, 5 )
 		
@@ -254,8 +257,28 @@ class ThagWorldDialogBase ( wx.Dialog ):
 		bSizer3.Fit( self )
 		
 		self.Centre( wx.BOTH )
+		
+		# Connect Events
+		self.char_list.Bind( wx.EVT_LIST_ITEM_SELECTED, self.OnCharSelect )
+		self.m_button2.Bind( wx.EVT_BUTTON, self.OnCharAdd )
+		self.m_button3.Bind( wx.EVT_BUTTON, self.OnCharSave )
+		self.m_button4.Bind( wx.EVT_BUTTON, self.OnCharRemove )
 	
 	def __del__( self ):
 		pass
+	
+	
+	# Virtual event handlers, overide them in your derived class
+	def OnCharSelect( self, event ):
+		event.Skip()
+	
+	def OnCharAdd( self, event ):
+		event.Skip()
+	
+	def OnCharSave( self, event ):
+		event.Skip()
+	
+	def OnCharRemove( self, event ):
+		event.Skip()
 	
 
