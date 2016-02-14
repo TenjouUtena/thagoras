@@ -30,10 +30,18 @@ class ThagMainFrame(ThagMainFrameBase):
     def makeWorldMenus(self):
         if(self.worlds):
             for ww in self.worlds:
-                submenu1 = wx.MenuItem(self.connect_menu, wx.ID_ANY, ww.name, "", wx.ITEM_NORMAL)
-                self.connect_menu.AppendItem(submenu1)
-                self.Bind(wx.EVT_MENU, lambda evt, world=ww: self.DoConnect(evt, world), submenu1)
-                self.connectmenus.append(submenu1)
+                wsubmenu1 = wx.MenuItem(self.connect_menu, wx.ID_ANY, ww.name, "", wx.ITEM_NORMAL)
+                wsubmenuM = wx.Menu()
+
+                for cc in ww.chars:
+                    submenu1 = wx.MenuItem(wsubmenuM, wx.ID_ANY, "%s - %s" % (ww.name, cc.user), "", wx.ITEM_NORMAL)
+                    self.Bind(wx.EVT_MENU, lambda evt, charr=cc: self.DoConnect(evt, charr), submenu1)
+                    wsubmenuM.AppendItem(submenu1)
+                    self.connectmenus.append(submenu1)
+
+                wsubmenu1.SetSubMenu(wsubmenuM)
+                self.connect_menu.AppendItem(wsubmenu1)
+                self.connectmenus.append(wsubmenu1)
 
                 submenu2 = wx.MenuItem(self.connect_menu, wx.ID_ANY, ww.name, "", wx.ITEM_NORMAL)
                 self.edit_menu.AppendItem(submenu2)
@@ -54,12 +62,12 @@ class ThagMainFrame(ThagMainFrameBase):
         self.destroyWorldMenus()
         self.makeWorldMenus()
                 
-    def DoConnect(self, event, world):
+    def DoConnect(self, event, charr):
         ## Create window
-        ww = ThagWorldFrame(self, world=world)
-        world.gui = ww
+        ww = ThagWorldFrame(self, world=charr)
+        charr.gui = ww
 
-        tt = net.connect(world.address, world.port, ww, world)
+        tt = net.connect(charr.world.address, charr.world.port, ww, charr)
         ww.Show()
 
     def DoEdit(self, event, world):

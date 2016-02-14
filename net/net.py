@@ -5,17 +5,19 @@ from twisted.internet.protocol import ClientFactory
 from twisted.conch.telnet import TelnetTransport, StatefulTelnetProtocol
 from twisted.internet import reactor
 
+import util.logger as logger
+
 def connect(host, port, gui, world):
-	ep = TCP4ClientEndpoint(reactor, host, port)
-	tf = TelnetFactory(gui, world)
-	tf.protocol = TelnetClient
-	tt = ep.connect(tf)
-	return tt
+    ep = TCP4ClientEndpoint(reactor, host, port)
+    tf = TelnetFactory(gui, world)
+    tf.protocol = TelnetClient
+    tt = ep.connect(tf)
+    return tt
 
 class TelnetFactory(ClientFactory):
     def __init__(self, gui, world):
-    	self.gui = gui
-    	self.world = world
+        self.gui = gui
+        self.world = world
 
     def buildProtocol(self, addr):
         self.transport = TelnetTransport(TelnetClient)
@@ -26,16 +28,45 @@ class TelnetFactory(ClientFactory):
         self.exit_command = cmd
  
     def clientConnectionLost(self, connector, reason):
-    	pass
+        pass
 
     def clientConnectionFailed(self, connector, reason):
-    	pass
+        pass
 
 
 
 class TelnetClient(StatefulTelnetProtocol):
 
+    def enableLocal(self, option):
+        rr = StatefulTelnetProtocol.enableLocal(self, option)
+        #self.transport.will(chr(91))
+        logger.log("NEGOTIATE>%d" % ord(option))
+        return rr
+
+    def enableRemote(self, option):
+        rr = StatefulTelnetProtocol.enableLocal(self, option)
+        #self.transport.will(chr(91))
+        logger.log("NEGOTIATE SERVER>%d" % ord(option))
+        return rr
+
+    def disableLocal(self, option):
+        rr = StatefulTelnetProtocol.enableLocal(self, option)
+        #self.transport.will(chr(91))
+        logger.log("D.NEGOTIATE>%d" % ord(option))
+        return rr
+
+    def disableRemote(self, option):
+        rr = StatefulTelnetProtocol.enableLocal(self, option)
+        #self.transport.will(chr(91))
+        logger.log("D.NEGOTIATE SERVER>%d" % ord(option))
+        return rr
+
     def connectionMade(self):
+
+        #self.transport.will(chr(91))
+
+        
+
         self.setLineMode()
 
         gui = self.factory.gui
@@ -44,16 +75,17 @@ class TelnetClient(StatefulTelnetProtocol):
         world.telnet = self
 
         if(gui):
-        	gui.telnet = self
+            gui.telnet = self
 
     def lineReceived(self, line):
-    	gui = self.factory.gui
+        gui = self.factory.gui
+        world = self.factory.world
 
-    	if(gui):
-    		gui.writeLine(line)
+        if(world):
+            world.recv(line)
 
 
     def write(self,command):
-        return self.sendLine(command)    	
+        return self.sendLine(command)       
 
 

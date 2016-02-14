@@ -9,6 +9,7 @@ from gui import ThagMainFrame
 from obj import World
 from util import settings
 
+
 # import twisted reactor *only after* installing wxreactor
 from twisted.internet import reactor, protocol
 from twisted.protocols import basic
@@ -23,7 +24,6 @@ class Thagoras(wx.App):
 
 if __name__ == "__main__":
 #    gettext.install("app") # replace with the appropriate catalog name
-
 
     worlds = []
 
