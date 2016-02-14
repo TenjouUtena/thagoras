@@ -26,7 +26,21 @@ class ThagWorldFrame(ThagWorldFrameBase):
         sty = wx.richtext.RichTextAttr()
         self.text_output.GetStyle(evt.GetPosition(),style=sty)
         if(sty.HasURL()):
-            wx.MessageBox(evt.GetString(), "Word Right Clicked")
+            sstr = sty.GetURL()
+            if(self.contexts.has_key(sstr)):
+                ## create Popup Menu
+                popup = wx.Menu()
+                ele = 0
+                for xx in sstr.split('|'):
+                    wxid = wx.NewId()
+                    aa = popup.Append(wxid, self.contexts[sstr].tagsettings['hint'].split('|')[ele+1])
+                    popup.Bind(wx.EVT_MENU, lambda evt, command=xx:self.DoCommand(evt, command),aa)
+                    ele += 1
+                self.text_output.PopupMenu(popup, self.text_output.ScreenToClient(wx.GetMousePosition()))
+                popup.Destroy()
+
+    def DoCommand(self, evt, command):
+        self.world.send(command)
 
     def OnURL(self, evt):
         if(self.contexts[evt.GetString()]):
@@ -42,8 +56,8 @@ class ThagWorldFrame(ThagWorldFrameBase):
         self.color[4] = wx.Colour(0,0,128)
         self.color[5] = wx.Colour(128,0,128)
         self.color[6] = wx.Colour(0,128,128)
-        self.color[7] = wx.Colour(128,128,128)
-        self.color[8] = wx.Colour(50,50,50)
+        self.color[7] = wx.Colour(0xAF,0xAF,0xAF)
+        self.color[8] = wx.Colour(0x5F,0x5F,0x5F)
         self.color[9] = wx.Colour(255,0,0)
         self.color[10] = wx.Colour(0,255,0)
         self.color[11] = wx.Colour(255,255,0)
@@ -101,7 +115,7 @@ class ThagWorldFrame(ThagWorldFrameBase):
             if(c.type == "Context"):
                 if(c.tag.tagsettings.has_key('href')):
                     self.contexts[c.tag.tagsettings['href']] = c.tag
-                self.text_output.BeginURL(c.tag.tagsettings['href'])
+                    self.text_output.BeginURL(c.tag.tagsettings['href'])
 
             if(c.type == "EndContext"):
                 self.text_output.EndURL()

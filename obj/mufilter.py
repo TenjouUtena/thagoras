@@ -101,6 +101,20 @@ class MUF_ANSI(MUFilter):
         self.type = "ANSI Decoder"
         self.simple = re.compile("\x1b\[([0-9;]+)m")
 
+    def interpretANSI(self, ansi, stack):
+        if(ansi >= 30 and ansi < 40):
+            ff = FontCommand()
+            ff.sub = "SimpleColor"
+            ff.color = ansi - 30
+            stack.append(ff)
+        if(ansi == 1):
+            ff = FontCommand()
+            ff.sub = "Bold"
+            stack.append(ff)
+        if(ansi == 0):
+            ff = FontCommand()
+            stack.append(ff)
+
     def run(self, inp):
         new = []
         for c in inp.commands:
@@ -121,34 +135,18 @@ class MUF_ANSI(MUFilter):
                         ll = tt.split(';')
                         #print ll
                         if(len(ll) == 1):
-                            base = ll[0]
-                            #print base
-                            if(int(base) >= 30 and int(base) < 40):
-                                ff = FontCommand()
-                                ff.sub = "SimpleColor"
-                                ff.color = int(base) - 30
-                                new.append(ff)
-                            if(int(base) == 1):
-                                ff = FontCommand()
-                                ff.sub = "Bold"
-                                new.append(ff)
-                            if(int(base) == 0):
-                                ff = FontCommand()
-                                new.append(ff)
+                            c1 = int(ll[0])
+                            self.interpretANSI(c1,new)
+
                         if(len(ll) == 2):
-                            bld = int(ll[0])
-                            colol = int(ll[1])
-                            if(bld == 1):
-                                ff = FontCommand()
-                                ff.sub = "Bold"
-                                new.append(ff)
-                            if(colol >= 30 and colol < 40):
-                                ff = FontCommand()
-                                ff.sub = "SimpleColor"
-                                ff.color = colol - 30
-                                new.append(ff)
+                            c1 = int(ll[0])
+                            c2 = int(ll[1])
+                            self.interpretANSI(c1, new)
+                            self.interpretANSI(c2, new)
+
                         if(len(ll) == 3):
                             ## RBG - DUMB STYLE - I hate you xterm
+                            ## i.e. a 3-set is probably a 256 color, look at it as such
                             c1 = int(ll[0])
                             c2 = int(ll[1])
                             c3 = int(ll[2])
