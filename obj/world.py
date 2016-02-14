@@ -29,6 +29,11 @@ class Character():
         ff = mufilter.MUF_ANSI()
         self.filters.append(ff)
 
+        ff = mufilter.MUF_MXP_Send_Handler()
+        self.filters.append(ff)
+
+
+
     def send(self, line):
         self.telnet.write(str(line))
 

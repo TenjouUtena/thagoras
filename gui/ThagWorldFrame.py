@@ -18,6 +18,21 @@ class ThagWorldFrame(ThagWorldFrameBase):
         sty.SetTextColour(self.color[7])
         self.text_output.SetBasicStyle(sty)
 
+        self.contexts = {}
+        self.text_output.Bind(wx.EVT_TEXT_URL, self.OnURL)
+        self.text_output.Bind(wx.richtext.EVT_RICHTEXT_RIGHT_CLICK, self.OnRightClick)
+
+    def OnRightClick(self, evt):
+        sty = wx.richtext.RichTextAttr()
+        self.text_output.GetStyle(evt.GetPosition(),style=sty)
+        if(sty.HasURL()):
+            wx.MessageBox(evt.GetString(), "Word Right Clicked")
+
+    def OnURL(self, evt):
+        if(self.contexts[evt.GetString()]):
+            cmd = evt.GetString().split('|')[0]
+            self.world.send(cmd)
+
     def setColors(self):
         self.color = {}
         self.color[0] = wx.Colour(0,0,0)
@@ -80,10 +95,18 @@ class ThagWorldFrame(ThagWorldFrameBase):
                 if(c.sub == "SimpleColor"):
                     d = c.color
                     if(bold and d < 8):
-                        d += 8
+                        d += 8  
                     self.text_output.EndTextColour()
                     self.text_output.BeginTextColour(self.color[d])
-        
+            if(c.type == "Context"):
+                if(c.tag.tagsettings.has_key('href')):
+                    self.contexts[c.tag.tagsettings['href']] = c.tag
+                self.text_output.BeginURL(c.tag.tagsettings['href'])
+
+            if(c.type == "EndContext"):
+                self.text_output.EndURL()
+
+
         self.text_output.ShowPosition(self.text_output.LastPosition)
 
     def OnSend(self, event):

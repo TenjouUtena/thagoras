@@ -22,6 +22,12 @@ class TagCommand(Command):
         self.tagtype = ""
         self.tagsettings = {}
 
+class EndTagCommand(Command):
+    def __init__(self):
+        Command.__init__(self)
+        self.type = "EndTag"
+        self.tagtype = ""
+        self.tagsettings = {}
 class NewLineCommand(Command):
     def __init__(self, text=""):
         Command.__init__(self)
@@ -35,6 +41,20 @@ class FontCommand(Command):
         self.sub = "Normal"
         self.color = 0
         self.text = text
+
+class ContextCommand(Command):
+    def __init__(self, text=""):
+        Command.__init__(self)
+        self.type = "Context"
+        self.text = ""
+
+class ContextEndCommand(Command):
+    def __init__(self, text=""):
+        Command.__init__(self)
+        self.type = "EndContext"
+        self.text = ""
+
+
 
 
 
@@ -53,9 +73,30 @@ class MUFilter():
     def run(self, inp):
         pass
 
+class MUF_MXP_Send_Handler():
+    def __init__(self):
+        self.type = "MXP SEND Tag Decoder"
+
+    def run(self, inp):
+        new = []
+        for c in inp.commands:
+            contin = True
+            if(c.type == "Tag"):
+                if(c.tagtype.lower() == "send"):
+                    ff = ContextCommand()
+                    ff.tag = c
+                    new.append(ff)
+
+            if(c.type == "EndTag"):
+                if(c.tagtype.lower() == "send"):
+                    ff = ContextEndCommand()
+                    new.append(ff)
+
+            if contin:
+                new.append(c)
+        inp.commands = new
+
 class MUF_ANSI(MUFilter):
-
-
     def __init__(self):
         self.type = "ANSI Decoder"
         self.simple = re.compile("\x1b\[([0-9;]+)m")
@@ -157,6 +198,11 @@ class MUF_Tag_Decoder(MUFilter):
             for attr in attrs:
                 k,v = attr
                 tt.tagsettings[k]=v
+            self.output.append(tt)
+
+        def handle_endtag(self, tag):
+            tt = EndTagCommand()
+            tt.tagtype = tag
             self.output.append(tt)
 
         def handle_data(self, data):
