@@ -87,13 +87,18 @@ class ThagWorldFrameBase ( wx.Frame ):
 		
 		bSizer1 = wx.BoxSizer( wx.VERTICAL )
 		
-		self.text_output = wx.richtext.RichTextCtrl( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0|wx.VSCROLL|wx.HSCROLL|wx.NO_BORDER|wx.WANTS_CHARS )
+		self.text_output = wx.richtext.RichTextCtrl( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, wx.TE_READONLY|wx.HSCROLL|wx.NO_BORDER|wx.VSCROLL )
+		self.text_output.SetForegroundColour( wx.Colour( 192, 192, 192 ) )
+		self.text_output.SetBackgroundColour( wx.Colour( 0, 0, 0 ) )
+		
 		bSizer1.Add( self.text_output, 100, wx.EXPAND |wx.ALL, 1 )
 		
 		bSizer2 = wx.BoxSizer( wx.HORIZONTAL )
 		
 		self.output = wx.TextCtrl( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, wx.TE_PROCESS_ENTER )
 		self.output.SetMaxLength( 0 ) 
+		self.output.SetForegroundColour( wx.Colour( 192, 192, 192 ) )
+		self.output.SetBackgroundColour( wx.Colour( 0, 0, 0 ) )
 		self.output.SetMinSize( wx.Size( -1,20 ) )
 		self.output.SetMaxSize( wx.Size( -1,27 ) )
 		
@@ -111,6 +116,7 @@ class ThagWorldFrameBase ( wx.Frame ):
 		self.Layout()
 		
 		# Connect Events
+		self.text_output.Bind( wx.EVT_SET_FOCUS, self.OnOutFocus )
 		self.output.Bind( wx.EVT_TEXT_ENTER, self.OnSend )
 	
 	def __del__( self ):
@@ -118,6 +124,9 @@ class ThagWorldFrameBase ( wx.Frame ):
 	
 	
 	# Virtual event handlers, overide them in your derived class
+	def OnOutFocus( self, event ):
+		event.Skip()
+	
 	def OnSend( self, event ):
 		event.Skip()
 	

@@ -23,6 +23,10 @@ class ThagWorldFrame(ThagWorldFrameBase):
         self.text_output.Bind(wx.EVT_TEXT_URL, self.OnURL)
         self.text_output.Bind(wx.richtext.EVT_RICHTEXT_RIGHT_CLICK, self.OnRightClick)
 
+    def OnOutFocus(self, evt):
+        self.output.SetFocus()
+
+
     def OnRightClick(self, evt):
         sty = wx.richtext.RichTextAttr()
         self.text_output.GetStyle(evt.GetPosition(),style=sty)
