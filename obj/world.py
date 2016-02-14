@@ -1,6 +1,4 @@
-
 import util.logger as logger
-
 import mufilter
 
 class Character():
@@ -32,8 +30,6 @@ class Character():
         ff = mufilter.MUF_MXP_Send_Handler()
         self.filters.append(ff)
 
-
-
     def send(self, line):
         self.telnet.write(str(line))
 
@@ -51,7 +47,6 @@ class Character():
             f.run(ii)
 
         self.gui.writeGUI(ii)
-
 
     def __getstate__(self):
         odict = self.__dict__.copy()

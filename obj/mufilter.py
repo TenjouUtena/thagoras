@@ -112,6 +112,7 @@ class MUF_ANSI(MUFilter):
             ff.sub = "Bold"
             stack.append(ff)
         if(ansi == 0):
+            ## Normal is Default
             ff = FontCommand()
             stack.append(ff)
 
@@ -124,7 +125,6 @@ class MUF_ANSI(MUFilter):
 
                 ## Try Simple
                 res = self.simple.split(c.text)
-                #print res
                 beat = 0
                 for tt in res:
                     if(beat == 0):
@@ -133,7 +133,6 @@ class MUF_ANSI(MUFilter):
                         beat = 1
                     else:
                         ll = tt.split(';')
-                        #print ll
                         if(len(ll) == 1):
                             c1 = int(ll[0])
                             self.interpretANSI(c1,new)
@@ -226,7 +225,6 @@ class MUF_Tag_Decoder(MUFilter):
         self.type = "HTML Tag Decoder"
 
     def run(self, inp):
-        logger.log("In Tag Filter")
         new = []
         for t in inp.commands:
             hh = MUF_Tag_Decoder.thagHTMLParser()
