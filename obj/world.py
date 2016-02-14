@@ -30,6 +30,9 @@ class Character():
         ff = mufilter.MUF_MXP_Send_Handler()
         self.filters.append(ff)
 
+        ff = mufilter.MUF_Text_Combiner()
+        self.filters.append(ff)
+
         ff = mufilter.MUF_URL_Handler()
         self.filters.append(ff)
 

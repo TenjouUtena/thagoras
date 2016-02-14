@@ -84,7 +84,29 @@ class MUFilter():
     def run(self, inp):
         pass
 
-class MUF_URL_Handler():
+class MUF_Text_Combiner(MUFilter):
+    def __init__(self):
+        self.type = "URL Decoder"
+        self.ur = re.compile(url.urlre)
+
+    def run(self, inp):
+        new = []
+        text = ""
+        for c in inp.commands:
+            contin = True
+            if(c.type == "Text"):
+                text += c.text
+                contin = False
+            if(c.type != "Text"):
+                if(text != ""):
+                    ff = TextCommand(text)
+                    new.append(ff)
+                    text = ""
+            if contin:
+                new.append(c)
+        inp.commands = new
+
+class MUF_URL_Handler(MUFilter):
     def __init__(self):
         self.type = "URL Decoder"
         self.ur = re.compile(url.urlre)
@@ -117,7 +139,7 @@ class MUF_URL_Handler():
 
 
 
-class MUF_MXP_Send_Handler():
+class MUF_MXP_Send_Handler(MUFilter):
     def __init__(self):
         self.type = "MXP SEND Tag Decoder"
 
