@@ -3,6 +3,7 @@ from htmlentitydefs import name2codepoint
 from copy import deepcopy
 import util.logger as logger
 import re
+import util.url as url
 
 class Command():
     def __init__(self):
@@ -54,6 +55,16 @@ class ContextEndCommand(Command):
         self.type = "EndContext"
         self.text = ""
 
+class URLCommand(Command):
+    def __init__(self, text=""):
+        Command.__init__(self)
+        self.type = "URL"
+        self.url = ""
+
+class URLEndCommand(Command):
+    def __init__(self, text=""):
+        Command.__init__(self)
+        self.type = "EndURL"
 
 
 
@@ -72,6 +83,39 @@ class MUFilter():
 
     def run(self, inp):
         pass
+
+class MUF_URL_Handler():
+    def __init__(self):
+        self.type = "URL Decoder"
+        self.ur = re.compile(url.urlre)
+
+    def run(self, inp):
+        new = []
+        for c in inp.commands:
+            contin = True
+            if(c.type == "Text"):
+                contin = False
+                beat = 0
+                res = self.ur.split(c.text)
+                for tt in res:
+                    if(beat == 0):
+                        ff = TextCommand(tt)
+                        new.append(ff)
+                        beat = 1
+                    else:
+                        ff = URLCommand()
+                        ff.url = tt
+                        new.append(ff)
+                        ff = TextCommand(tt)
+                        new.append(ff)
+                        ff = URLEndCommand()
+                        new.append(ff)
+                        beat = 0
+            if contin:
+                new.append(c)
+        inp.commands = new
+
+
 
 class MUF_MXP_Send_Handler():
     def __init__(self):

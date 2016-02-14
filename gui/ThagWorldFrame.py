@@ -2,6 +2,7 @@ import wx
 import copy
 import obj.world
 from ThagGuiBase import *
+import webbrowser
 
 
 class ThagWorldFrame(ThagWorldFrameBase):
@@ -43,9 +44,13 @@ class ThagWorldFrame(ThagWorldFrameBase):
         self.world.send(command)
 
     def OnURL(self, evt):
-        if(self.contexts[evt.GetString()]):
+        ## If I have a cached command, do that, otherise it's probably a URL
+        if(self.contexts.has_key(evt.GetString())):
+            #Send the default href command
             cmd = evt.GetString().split('|')[0]
             self.world.send(cmd)
+        else:
+            webbrowser.open(evt.GetString(),2)
 
     def setColors(self):
         self.color = {}
@@ -118,6 +123,10 @@ class ThagWorldFrame(ThagWorldFrameBase):
                     self.text_output.BeginURL(c.tag.tagsettings['href'])
 
             if(c.type == "EndContext"):
+                self.text_output.EndURL()
+            if(c.type == "URL"):
+                self.text_output.BeginURL(c.url)
+            if(c.type == "EndURL"):
                 self.text_output.EndURL()
 
 
