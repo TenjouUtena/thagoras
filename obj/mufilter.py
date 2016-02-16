@@ -97,7 +97,7 @@ class MUF_Text_Combiner(MUFilter):
             if(c.type == "Text"):
                 text += c.text
                 contin = False
-            if(c.type != "Text"):
+            else:
                 if(text != ""):
                     ff = TextCommand(text)
                     new.append(ff)
