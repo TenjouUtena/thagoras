@@ -8,6 +8,9 @@ class Character():
         self.password = password
         self.setupVars()
 
+    def getWidth(self):
+        return self.gui.getWidth()
+
     def setupVars(self):
         self.gui = None
         self.telnet = None
@@ -71,12 +74,14 @@ class World():
         self.address = address
         self.port = port
         self.name = name
+        self.ssl = False
         self.setupVars()
 
     def setupVars(self):
         self.chars = []
         self.gui = None
         self.telnet = None
+        self.ssl = False
         self.outputs = {}
         self.inputs = {}
         self.filters = {}

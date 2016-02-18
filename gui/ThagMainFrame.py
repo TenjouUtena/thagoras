@@ -3,6 +3,7 @@ import net.net as net
 from ThagWorldFrame import ThagWorldFrame, ThagWorldDialog
 from ThagGuiBase import *
 
+from obj.world import World
 
 from util import settings
 
@@ -84,7 +85,13 @@ class ThagMainFrame(ThagMainFrameBase):
 
     def OnNewWorld(self, event):
         dlg = ThagWorldDialog(self)
-        dlg.ShowModal();
+
+        if dlg.ShowModal() == wx.ID_OK:
+            world = World()
+            dlg.writeObj(world)
+            self.worlds.append(world)
+            self.refresh()
+
 
     def DoLoad(self, event):
         self.destroyWorldMenus()

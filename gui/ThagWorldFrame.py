@@ -22,6 +22,24 @@ class ThagWorldFrame(ThagWorldFrameBase):
         self.contexts = {}
         self.text_output.Bind(wx.EVT_TEXT_URL, self.OnURL)
         self.text_output.Bind(wx.richtext.EVT_RICHTEXT_RIGHT_CLICK, self.OnRightClick)
+        self.text_output.Bind(wx.EVT_SIZE, self.OnSize)
+
+    def OnSize(self, evt):
+        if(self.telnet):
+            self.telnet.sendWindowSize()
+        evt.Skip()
+
+    def getWidth(self):
+        f = self.text_output.GetFont()
+        dc = wx.WindowDC(self.text_output)
+        dc.SetFont(wx.Font(10, wx.FONTFAMILY_MODERN,wx.FONTSTYLE_NORMAL,wx.FONTWEIGHT_NORMAL))
+
+        (w1,h1) = dc.GetTextExtent("-" * 50)
+        (w,h) = self.text_output.GetSize()
+
+        #print w1,h1,w,h,float(w)/(float(w1)/50.0), w/(w1/50)
+        ## 21% kerning?  idgaf
+        return int(float((w-25))/(float(w1)/50.0))
 
     def OnOutFocus(self, evt):
         self.output.SetFocus()

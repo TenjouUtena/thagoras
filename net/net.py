@@ -1,12 +1,21 @@
 from twisted.internet.endpoints import TCP4ClientEndpoint, SSL4ClientEndpoint
 from twisted.internet.protocol import ClientFactory
-from twisted.conch.telnet import TelnetTransport, StatefulTelnetProtocol
+from twisted.conch.telnet import TelnetTransport, StatefulTelnetProtocol,   IAC, SB, SE, Telnet
 from twisted.internet import reactor, ssl, error
 from twisted.python.modules import getModule
+from twisted.protocols import basic
 
 from OpenSSL import crypto
 
 import util.logger as logger
+
+## Defines
+
+TERMINFO = chr(24)
+NAWS = chr(31)
+
+GMCP = chr(201)
+
 
 def connect(host, port, gui, world):
     ep = TCP4ClientEndpoint(reactor, host, port)
@@ -16,28 +25,7 @@ def connect(host, port, gui, world):
     return tt
 
 def connectSSL(host, port, gui, world):
-    k = crypto.PKey()
-    k.generate_key(crypto.TYPE_RSA, 1024)
-
-    # create a self-signed cert
-    cert = crypto.X509()
-    cert.get_subject().C = "US"
-    cert.get_subject().ST = "Minnesota"
-    cert.get_subject().L = "Minnetonka"
-    cert.get_subject().O = "my company"
-    cert.get_subject().OU = "my organization"
-    cert.get_subject().CN = "blah"
-    cert.set_serial_number(1000)
-    cert.gmtime_adj_notBefore(0)
-    cert.gmtime_adj_notAfter(10*365*24*60*60)
-    cert.set_issuer(cert.get_subject())
-    cert.set_pubkey(k)
-    cert.sign(k, 'sha1')
-
-    #authData = getModule(__name__).filePath.sibling('mykey.pem').getContent()
-    cc =ssl.PrivateCertificate.loadPEM(crypto.dump_certificate(crypto.FILETYPE_PEM, cert) + crypto.dump_privatekey(crypto.FILETYPE_PEM, k))
-    options = ssl.optionsForClientTLS(u'penultimatemush.com', clientCertificate=cc)
-    ep = SSL4ClientEndpoint(reactor, host, port, options)
+    ep = SSL4ClientEndpoint(reactor, host, port, ssl.ClientContextFactory())
     tf = TelnetFactory(gui, world)
     tf.protocol = TelnetClient
     tt = ep.connect(tf)
@@ -68,22 +56,55 @@ class TelnetFactory(ClientFactory):
 
 class TelnetClient(StatefulTelnetProtocol):
 
+    def terminfo(self, bytes):
+        ## We want to write directly, not have this interpreted like poop
+        self.transport._write(IAC + SB + TERMINFO + chr(0) + "thagoras" + IAC + SE)
+
+    def sendWindowSize(self):
+        if(not self.factory.world):
+            return
+
+        if(not self.naws):
+            return
+
+        width = self.factory.world.getWidth()
+        ## Always return 24 for height, it shouldn't matter.
+        wbig = int(width / 256)
+        wsmall = int(width % 256)
+
+        self.transport._write(IAC + SB + NAWS + chr(wbig) + chr(wsmall) + chr(0) + chr(24) + IAC + SE)
+
+
+
     def unhandledSubnegotiation(self, command, by):
         rr = StatefulTelnetProtocol.unhandledSubnegotiation(self, command, by)
-        logger.log("SUB NEG Command: %d  %")
+        logger.log("SUB NEG Command: %s  %s" % (command,by))
         return rr
 
     def enableLocal(self, option):
-        #rr = StatefulTelnetProtocol.enableLocal(self, option)
-        logger.log("NEGOTIATE>%d" % ord(option))
-        if(option == chr(24)):
+        
+        ## Allow us to be asked about TERMINFO
+        if(option == TERMINFO):
             return True
+
+        ## Allow us to be asked about NAWS
+        if(option == NAWS):
+            self.naws = True
+            self.sendWindowSize()
+            return True
+
+        ## Log anything er aren't currently responding too
+        logger.log("NEGOTIATE>%d" % ord(option))
+
         return False
 
     def enableRemote(self, option):
-        rr = StatefulTelnetProtocol.enableLocal(self, option)
+        if(option == GMCP):
+            return True
+
+        ## Log anything er aren't currently responding too
         logger.log("NEGOTIATE SERVER>%d" % ord(option))
-        return rr
+        return False
 
     def disableLocal(self, option):
         rr = StatefulTelnetProtocol.enableLocal(self, option)
@@ -96,12 +117,18 @@ class TelnetClient(StatefulTelnetProtocol):
         return rr
 
     def connectionLost(self, reason):
-        print("Lost.")
+        #print("Lost.")
         if not reason.check(error.ConnectionClosed):
             print("BAD:", reason.value)
 
     def connectionMade(self):
-        #self.transport.do(chr(24)  ## We want to negotiate about this
+        ## Twisted is put together weird
+        ## So initialization is here
+        ## No real biggie
+
+
+        self.transport.negotiationMap[TERMINFO] = self.terminfo
+        self.naws = False
         self.setLineMode()
         gui = self.factory.gui
         world = self.factory.world 
