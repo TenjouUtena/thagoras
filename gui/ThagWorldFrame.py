@@ -23,6 +23,11 @@ class ThagWorldFrame(ThagWorldFrameBase):
         self.text_output.Bind(wx.EVT_TEXT_URL, self.OnURL)
         self.text_output.Bind(wx.richtext.EVT_RICHTEXT_RIGHT_CLICK, self.OnRightClick)
         self.text_output.Bind(wx.EVT_SIZE, self.OnSize)
+        self.Bind(wx.EVT_MOUSEWHEEL, self.OnScroll)
+
+
+    def OnScroll(self, evt):
+        self.text_output.ScrollLines(evt.GetWheelRotation()*-0.1)
 
     def OnSize(self, evt):
         if(self.telnet):
@@ -37,8 +42,6 @@ class ThagWorldFrame(ThagWorldFrameBase):
         (w1,h1) = dc.GetTextExtent("-" * 50)
         (w,h) = self.text_output.GetSize()
 
-        #print w1,h1,w,h,float(w)/(float(w1)/50.0), w/(w1/50)
-        ## 21% kerning?  idgaf
         return int(float((w-25))/(float(w1)/50.0))
 
     def OnOutFocus(self, evt):
