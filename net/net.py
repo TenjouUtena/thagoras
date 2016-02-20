@@ -60,6 +60,9 @@ class TelnetClient(StatefulTelnetProtocol):
         ## We want to write directly, not have this interpreted like poop
         self.transport._write(IAC + SB + TERMINFO + chr(0) + "thagoras" + IAC + SE)
 
+    def oob(self, by):
+        self.factory.world.oob(''.join(by))
+
     def sendWindowSize(self):
         if(not self.factory.world):
             return
@@ -128,6 +131,7 @@ class TelnetClient(StatefulTelnetProtocol):
 
 
         self.transport.negotiationMap[TERMINFO] = self.terminfo
+        self.transport.negotiationMap[GMCP] = self.oob
         self.naws = False
         self.setLineMode()
         gui = self.factory.gui

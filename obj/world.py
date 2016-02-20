@@ -1,5 +1,6 @@
 import util.logger as logger
 import mufilter
+import re, json
 
 class Character():
     def __init__(self, world, user="", password=""):
@@ -7,6 +8,18 @@ class Character():
         self.user = user
         self.password = password
         self.setupVars()
+        
+
+    def oob(self, info):
+        res = self.oobre.match(info)
+        command = res.group(1)
+        comlist = command.split('.')
+
+        if(comlist[0].lower() == 'info'):
+            ## We have an info message
+            if(not self.world.profiles.has_key(comlist[1])):
+                self.world.profiles[comlist[1]] = {}
+            self.world.profiles[comlist[1]][comlist[2]] = json.loads(res.group(3))
 
     def getWidth(self):
         return self.gui.getWidth()
@@ -18,6 +31,7 @@ class Character():
         self.inputs = {}
         self.filters = []
         self.setDefaultFilters()
+        self.oobre = re.compile(r'(([0-9a-zA-Z_\'\"\- ]+\.)*[0-9a-zA-Z_\'\"\-]+) ({.*?})')
 
     def setDefaultFilters(self):
         self.filters = []
@@ -77,6 +91,7 @@ class World():
         self.ssl = False
         self.setupVars()
 
+
     def setupVars(self):
         self.chars = []
         self.gui = None
@@ -85,6 +100,7 @@ class World():
         self.outputs = {}
         self.inputs = {}
         self.filters = {}
+        self.profiles = {}
 
     def send(self, line):
         self.telnet.write(str(line))
