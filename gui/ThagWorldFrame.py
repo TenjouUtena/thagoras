@@ -2,14 +2,14 @@ import wx
 import copy
 import obj.world
 from ThagGuiBase import *
-import webbrowser
-
+import webbrowser, re, urllib2, StringIO
+from util.url import urlre, urlImageGetter
 
 class ThagWorldFrame(ThagWorldFrameBase):
     def __init__(self, *args, **kwds):
         self.world = kwds['world']
         kwds.pop('world')
-        ThagWorldFrameBase.__init__(self, args[0])
+        ThagWorldFrameBase.__init__(self, *args, **kwds)
         self.telnet = None
         self.setColors()
         # Set default Style
@@ -20,10 +20,10 @@ class ThagWorldFrame(ThagWorldFrameBase):
         self.text_output.SetBasicStyle(sty)
 
         self.contexts = {}
-        self.text_output.Bind(wx.EVT_TEXT_URL, self.OnURL)
+        #self.text_output.Bind(wx.EVT_TEXT_URL, self.OnURL)
         self.text_output.Bind(wx.richtext.EVT_RICHTEXT_RIGHT_CLICK, self.OnRightClick)
-        self.text_output.Bind(wx.EVT_SIZE, self.OnSize)
-        self.Bind(wx.EVT_MOUSEWHEEL, self.OnScroll)
+        #self.text_output.Bind(wx.EVT_SIZE, self.OnSize)
+        #self.Bind(wx.EVT_MOUSEWHEEL, self.OnScroll)
 
 
     def OnScroll(self, evt):
@@ -57,13 +57,41 @@ class ThagWorldFrame(ThagWorldFrameBase):
                 ## create Popup Menu
                 popup = wx.Menu()
                 ele = 0
+                wantInfoWindow = False
+                character = ""
                 for xx in sstr.split('|'):
+                    ## This is kind of a hackish way to do this, but assume it's a character if
+                    ## We see a finger prompt
+                    if(xx.split(' ')[0].lower() == '+finger'):
+                        wantInfoWindow = True
+                        character = ' '.join(xx.split(' ')[1:])
+
                     wxid = wx.NewId()
-                    aa = popup.Append(wxid, self.contexts[sstr].tagsettings['hint'].split('|')[ele+1])
+
+                    ## use the command if no hint field is given
+                    if(not self.contexts[sstr].tagsettings.has_key('hint')):
+                        label = xx
+                    else:
+                        label = self.contexts[sstr].tagsettings['hint'].split('|')[ele+1]
+                    aa = popup.Append(wxid, label)
                     popup.Bind(wx.EVT_MENU, lambda evt, command=xx:self.DoCommand(evt, command),aa)
                     ele += 1
+                if(wantInfoWindow):
+                    ## Add a line to the menu to call the character info popout
+
+                    popup.AppendSeparator()
+                    charLabel = "Info Window for %s" % character
+                    wxid = wx.NewId()
+                    res = popup.Append(wxid, charLabel)
+                    popup.Bind(wx.EVT_MENU, lambda evt, player=character:self.ShowInfo(evt, player), res)
+
                 self.text_output.PopupMenu(popup, self.text_output.ScreenToClient(wx.GetMousePosition()))
                 popup.Destroy()
+
+    def ShowInfo(self, evt, player):
+        newWindow = ThagPersonInfo(self, self.world.world.profiles, player)
+        newWindow.Show()
+
 
     def DoCommand(self, evt, command):
         self.world.send(command)
@@ -232,5 +260,92 @@ class ThagWorldDialog(ThagWorldDialogBase):
     def OnCharRemove( self, event ):
         event.Skip()
     
+class ThagPersonInfo(ThagPersonInfoBase):
+    def __init__(self, parent, information, selected = ""):
+        ThagPersonInfoBase.__init__(self, parent)
+        self.notebookpanels = {}
+        self.updateInfo(information)
 
+        n = self.person_selector.FindString(selected)
+        if(n):
+            self.person_selector.SetSelection(n)
+
+
+    def updateInfo(self, information):
+        self.info = information
+        self.people = self.info.keys()
+
+        self.person_selector.Clear()
+        for person in self.people:
+            self.person_selector.Append(person)
+
+    def OnSelectPerson(self, evt):
+        self.buildData()
+        evt.Skip()
+
+    def buildData(self):
+        ## Clean it out
+        self.notebook.DeleteAllPages()
+
+        person = self.person_selector.GetStringSelection()
+
+        if(not self.info.has_key(person)):
+            return
+
+        for page, info in self.info[person].iteritems():
+            newp = ThagPersonInfoPane(self.notebook, info)
+            self.notebook.AddPage(newp, page)
+        
+
+class ThagPersonInfoPane(ThagPersonInfoPaneBase):
+    def __init__(self, parent, info):
+        self.info = info
+        ThagPersonInfoPaneBase.__init__(self, parent)
+        self.buildPage()
+
+    def buildPage(self):
+        self.info_list.InsertColumn(0,'Item')
+        self.info_list.InsertColumn(1,'Value')
+        self.general_info.Clear()
+        ii = 0
+        picture = None
+        for key, value in self.info.iteritems():
+            if(key.lower() == 'general'):
+
+                self.general_info.AppendText(value)
+            else:
+                ##TODO: Make this better
+                ## Not perfect, but try and find picture value
+                if(key.lower() == 'picture'):
+                    picture = key
+                elif(key.lower().startswith('picture') and not picture):
+                    picture = key
+
+                self.info_list.InsertStringItem(ii,key)
+                self.info_list.SetStringItem(ii,1,value)
+                ii += 1
+
+        self.info_list.SetColumnWidth(1, wx.LIST_AUTOSIZE)
+
+        ##TODO:  Look for picture URLs
+        ## Find a picture URL to show
+        ### If we found a 'picture' 
+        if(picture):
+            rx = re.compile(urlre)
+            mm = rx.search(self.info[picture])
+            if(mm):
+                self.showPicture(mm.group(1))
+
+
+
+    def showPicture(self, url):
+        url = urlImageGetter(url)
+        print url
+        try:
+            buf = urllib2.urlopen(url).read()
+            sbuf = StringIO.StringIO(buf)
+            img = wx.ImageFromStream(sbuf).ConvertToBitmap()
+        except:
+            return
+        self.person_picture.SetBitmap(img)
 

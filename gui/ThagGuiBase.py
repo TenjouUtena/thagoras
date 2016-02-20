@@ -78,7 +78,7 @@ class ThagMainFrameBase ( wx.Frame ):
 class ThagWorldFrameBase ( wx.Frame ):
 	
 	def __init__( self, parent ):
-		wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = u"World", pos = wx.DefaultPosition, size = wx.Size( 977,549 ), style = wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL )
+		wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = wx.EmptyString, pos = wx.DefaultPosition, size = wx.Size( 977,549 ), style = wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL )
 		
 		self.SetSizeHintsSz( wx.DefaultSize, wx.DefaultSize )
 		
@@ -116,7 +116,10 @@ class ThagWorldFrameBase ( wx.Frame ):
 		self.Layout()
 		
 		# Connect Events
+		self.Bind( wx.EVT_MOUSEWHEEL, self.OnScroll )
 		self.text_output.Bind( wx.EVT_SET_FOCUS, self.OnOutFocus )
+		self.text_output.Bind( wx.EVT_SIZE, self.OnSize )
+		self.text_output.Bind( wx.EVT_TEXT_URL, self.OnURL )
 		self.output.Bind( wx.EVT_TEXT_ENTER, self.OnSend )
 	
 	def __del__( self ):
@@ -124,7 +127,16 @@ class ThagWorldFrameBase ( wx.Frame ):
 	
 	
 	# Virtual event handlers, overide them in your derived class
+	def OnScroll( self, event ):
+		event.Skip()
+	
 	def OnOutFocus( self, event ):
+		event.Skip()
+	
+	def OnSize( self, event ):
+		event.Skip()
+	
+	def OnURL( self, event ):
 		event.Skip()
 	
 	def OnSend( self, event ):
@@ -289,5 +301,89 @@ class ThagWorldDialogBase ( wx.Dialog ):
 	
 	def OnCharRemove( self, event ):
 		event.Skip()
+	
+
+###########################################################################
+## Class ThagPersonInfoBase
+###########################################################################
+
+class ThagPersonInfoBase ( wx.Frame ):
+	
+	def __init__( self, parent ):
+		wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = wx.EmptyString, pos = wx.DefaultPosition, size = wx.Size( 959,662 ), style = wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL )
+		
+		self.SetSizeHintsSz( wx.DefaultSize, wx.DefaultSize )
+		
+		bSizer8 = wx.BoxSizer( wx.VERTICAL )
+		
+		person_selectorChoices = []
+		self.person_selector = wx.ComboBox( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, person_selectorChoices, wx.CB_DROPDOWN|wx.CB_SORT )
+		bSizer8.Add( self.person_selector, 0, wx.ALL, 5 )
+		
+		self.notebook = wx.Notebook( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, 0 )
+		
+		bSizer8.Add( self.notebook, 1, wx.EXPAND |wx.ALL, 5 )
+		
+		
+		self.SetSizer( bSizer8 )
+		self.Layout()
+		
+		self.Centre( wx.BOTH )
+		
+		# Connect Events
+		self.person_selector.Bind( wx.EVT_COMBOBOX, self.OnSelectPerson )
+	
+	def __del__( self ):
+		pass
+	
+	
+	# Virtual event handlers, overide them in your derived class
+	def OnSelectPerson( self, event ):
+		event.Skip()
+	
+
+###########################################################################
+## Class ThagPersonInfoPaneBase
+###########################################################################
+
+class ThagPersonInfoPaneBase ( wx.Panel ):
+	
+	def __init__( self, parent ):
+		wx.Panel.__init__ ( self, parent, id = wx.ID_ANY, pos = wx.DefaultPosition, size = wx.Size( 500,300 ), style = wx.TAB_TRAVERSAL )
+		
+		bSizer10 = wx.BoxSizer( wx.VERTICAL )
+		
+		bSizer11 = wx.BoxSizer( wx.HORIZONTAL )
+		
+		self.general_info = wx.TextCtrl( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size( -1,-1 ), wx.TE_MULTILINE|wx.TE_WORDWRAP )
+		self.general_info.SetMinSize( wx.Size( 250,-1 ) )
+		
+		bSizer11.Add( self.general_info, 0, wx.ALL|wx.EXPAND, 5 )
+		
+		self.m_scrolledWindow1 = wx.ScrolledWindow( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.HSCROLL|wx.VSCROLL )
+		self.m_scrolledWindow1.SetScrollRate( 5, 5 )
+		bSizer111 = wx.BoxSizer( wx.VERTICAL )
+		
+		self.person_picture = wx.StaticBitmap( self.m_scrolledWindow1, wx.ID_ANY, wx.NullBitmap, wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer111.Add( self.person_picture, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_TOP|wx.ALL|wx.EXPAND, 5 )
+		
+		
+		self.m_scrolledWindow1.SetSizer( bSizer111 )
+		self.m_scrolledWindow1.Layout()
+		bSizer111.Fit( self.m_scrolledWindow1 )
+		bSizer11.Add( self.m_scrolledWindow1, 1, wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_TOP|wx.ALL|wx.EXPAND, 5 )
+		
+		
+		bSizer10.Add( bSizer11, 1, wx.EXPAND, 5 )
+		
+		self.info_list = wx.ListCtrl( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LC_REPORT )
+		bSizer10.Add( self.info_list, 0, wx.ALL|wx.EXPAND, 5 )
+		
+		
+		self.SetSizer( bSizer10 )
+		self.Layout()
+	
+	def __del__( self ):
+		pass
 	
 

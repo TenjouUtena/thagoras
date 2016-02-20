@@ -57,7 +57,7 @@ class Character():
         self.telnet.write(str(line))
 
     def recv(self, line):
-        logger.log(line)
+        #logger.log(line)
 
         ### Setup Pueblo
         res = line.find("This world is Pueblo 1.10 Enhanced.")

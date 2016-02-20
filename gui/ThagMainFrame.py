@@ -50,6 +50,9 @@ class ThagMainFrame(ThagMainFrameBase):
                 self.editmenus.append(submenu2)
 
     def destroyWorldMenus(self):
+
+        ##TODO: Fix this so that it works better
+
         #for o in self.connectmenus:
             #self.connect_menu.Delete(o.GetId())
 
@@ -66,6 +69,7 @@ class ThagMainFrame(ThagMainFrameBase):
     def DoConnect(self, event, charr):
         ## Create window
         ww = ThagWorldFrame(self, world=charr)
+        ww.SetTitle(charr.world.name + ' - ' + charr.user)
         charr.gui = ww
 
         tt = net.connect(charr.world.address, charr.world.port, ww, charr)
