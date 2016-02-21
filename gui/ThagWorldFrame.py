@@ -102,6 +102,9 @@ class ThagWorldFrame(ThagWorldFrameBase):
             newWindow.Show()
         else:
             self.infowindow.updateInfo(self.world.world.profiles)
+            self.infowindow.Select(player)
+            self.infowindow.buildData()
+            self.infowindow.Show()
 
     def HideInfo(self):
         self.infowindow = None
@@ -280,9 +283,14 @@ class ThagPersonInfo(ThagPersonInfoBase):
         self.notebookpanels = {}
         self.updateInfo(information)
 
+        self.Select(selected)
+        self.buildData()
+
+    def Select(self, selected):
         n = self.person_selector.FindString(selected)
         if(n):
             self.person_selector.SetSelection(n)
+
 
     def OnClose(self, evt):
         self.parent.HideInfo()
