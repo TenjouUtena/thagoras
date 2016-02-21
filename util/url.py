@@ -1,4 +1,5 @@
 import re
+import bs4, urllib2
 
 urlre = '(http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.\&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F\&\#]))+)'
 #urlre = r'(?i)\b((?:[a-z][\w-]+:(?:/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:\'".,<>?]))'
@@ -8,6 +9,11 @@ urlre = '(http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.\&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a
 def urlImageGetter(url):
     hostfind = re.compile(r'[a-z0-9.\-]+[.][a-z]{2,4}/')
     imageendings = ['png','gif','jpg','bmp']
+
+    ## ask it if it will return an image:
+    res = urllib2.urlopen(url)
+    if(res.info().gettype().lower().startswith('image')):
+        return url
 
     ##If we end in a image ending, then we're probably already an image url
     if(url[-3:] in imageendings):
@@ -22,6 +28,15 @@ def urlImageGetter(url):
     if(('imgur' in host) and (not url[-3:] in imageendings)):
         return url+'.png'
 
+    ## at this point we need to find the image in the HTML page
+    soup = bs4.BeautifulSoup(res.read(), "html.parser")
+
+    ## This would at least for various boorus
+    img = soup.find_all('img','image')
+    if(img):
+        return(img[0]['src'])
+
+    ##Sankaku seems to 403 us for beign a robbit.
 
     ## Just return the URL back if we don't find anything
     return url

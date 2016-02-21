@@ -59,10 +59,6 @@ class Character():
     def recv(self, line):
         #logger.log(line)
 
-        ### Setup Pueblo
-        res = line.find("This world is Pueblo 1.10 Enhanced.")
-        if(res != -1):
-            self.telnet.write("PUEBLOCLIENT 1.10\n")
 
         ## Run Filters
         ii = mufilter.Input(line)

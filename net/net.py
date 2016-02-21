@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from twisted.internet.endpoints import TCP4ClientEndpoint, SSL4ClientEndpoint
 from twisted.internet.protocol import ClientFactory
 from twisted.conch.telnet import TelnetTransport, StatefulTelnetProtocol,   IAC, SB, SE, Telnet
@@ -133,6 +135,7 @@ class TelnetClient(StatefulTelnetProtocol):
         self.transport.negotiationMap[TERMINFO] = self.terminfo
         self.transport.negotiationMap[GMCP] = self.oob
         self.naws = False
+        self.hasconned = False
         self.setLineMode()
         gui = self.factory.gui
         world = self.factory.world 
@@ -143,6 +146,21 @@ class TelnetClient(StatefulTelnetProtocol):
     def lineReceived(self, line):
         gui = self.factory.gui
         world = self.factory.world
+
+        ### Setup Pueblo if we see the command
+        res = line.find("This world is Pueblo 1.10 Enhanced.")
+        if(res != -1):
+            self.transport.write("PUEBLOCLIENT 1.10\n")
+
+        ## We want to make sure we're sending the autocon at _about_ the right time
+        ## so we look for the sting 'con' as in 'connect'
+        ## Only MUSH-style supported right now.   ゴメンナサイ    
+        if(not self.hasconned):
+            if(line.find('con') != -1):
+                self.transport.write(("con %s %s\n" % (world.user, world.password)).encode('cp1252'))
+                self.hasconned = True
+
+
         if(world):
             world.recv(line)
 
