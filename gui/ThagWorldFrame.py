@@ -1,10 +1,15 @@
 import wx
 import copy
+import webbrowser, re, urllib2, StringIO
+import threading
+
 import obj.world
 from ThagGuiBase import *
-import webbrowser, re, urllib2, StringIO
 from util.url import urlre, urlImageGetter
 import util.logger as logger
+
+
+
 
 class ThagWorldFrame(ThagWorldFrameBase):
     def __init__(self, *args, **kwds):
@@ -347,9 +352,14 @@ class ThagPersonInfoPane(ThagPersonInfoPaneBase):
             rx = re.compile(urlre)
             mm = rx.search(self.info[picture])
             if(mm):
-                self.showPicture(mm.group(1))
+                tt = threading.Thread(target=self.showPicture, args=(mm.group(1),))
+                tt.start()
+                #self.showPicture(mm.group(1))
 
-
+    def SetPicture(self, pic):
+        self.person_picture.SetBitmap(pic)
+        self.GetParent().Refresh()
+        self.GetParent().Update()
 
     def showPicture(self, url):
         url = urlImageGetter(url)
@@ -360,5 +370,5 @@ class ThagPersonInfoPane(ThagPersonInfoPaneBase):
             img = wx.ImageFromStream(sbuf).ConvertToBitmap()
         except:
             return
-        self.person_picture.SetBitmap(img)
+        wx.CallAfter(self.SetPicture,img)
 
