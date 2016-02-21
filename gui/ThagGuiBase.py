@@ -366,15 +366,15 @@ class ThagPersonInfoPaneBase ( wx.Panel ):
 		
 		self.m_scrolledWindow1 = wx.ScrolledWindow( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.HSCROLL|wx.VSCROLL )
 		self.m_scrolledWindow1.SetScrollRate( 5, 5 )
-		bSizer111 = wx.BoxSizer( wx.VERTICAL )
+		picSizer = wx.BoxSizer( wx.VERTICAL )
 		
 		self.person_picture = wx.StaticBitmap( self.m_scrolledWindow1, wx.ID_ANY, wx.NullBitmap, wx.DefaultPosition, wx.DefaultSize, 0 )
-		bSizer111.Add( self.person_picture, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_TOP|wx.ALL|wx.EXPAND, 5 )
+		picSizer.Add( self.person_picture, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_TOP|wx.ALL|wx.EXPAND, 5 )
 		
 		
-		self.m_scrolledWindow1.SetSizer( bSizer111 )
+		self.m_scrolledWindow1.SetSizer( picSizer )
 		self.m_scrolledWindow1.Layout()
-		bSizer111.Fit( self.m_scrolledWindow1 )
+		picSizer.Fit( self.m_scrolledWindow1 )
 		bSizer11.Add( self.m_scrolledWindow1, 1, wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_TOP|wx.ALL|wx.EXPAND, 5 )
 		
 		

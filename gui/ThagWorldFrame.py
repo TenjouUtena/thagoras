@@ -358,8 +358,7 @@ class ThagPersonInfoPane(ThagPersonInfoPaneBase):
 
     def SetPicture(self, pic):
         self.person_picture.SetBitmap(pic)
-        self.GetParent().Refresh()
-        self.GetParent().Update()
+        self.m_scrolledWindow1.SendSizeEvent()
 
     def showPicture(self, url):
         url = urlImageGetter(url)
