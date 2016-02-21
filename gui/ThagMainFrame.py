@@ -22,6 +22,7 @@ class ThagMainFrame(ThagMainFrameBase):
         ThagMainFrameBase.__init__(self, None)
 
         self.connectmenus = []
+        self.subconmenus = {}
         self.editmenus = []
 
         ## Programatically add the worlds.
@@ -33,12 +34,13 @@ class ThagMainFrame(ThagMainFrameBase):
             for ww in self.worlds:
                 wsubmenu1 = wx.MenuItem(self.connect_menu, wx.ID_ANY, ww.name, "", wx.ITEM_NORMAL)
                 wsubmenuM = wx.Menu()
+                self.subconmenus[wsubmenuM] = []
 
                 for cc in ww.chars:
                     submenu1 = wx.MenuItem(wsubmenuM, wx.ID_ANY, "%s - %s" % (ww.name, cc.user), "", wx.ITEM_NORMAL)
                     self.Bind(wx.EVT_MENU, lambda evt, charr=cc: self.DoConnect(evt, charr), submenu1)
                     wsubmenuM.AppendItem(submenu1)
-                    self.connectmenus.append(submenu1)
+                    self.subconmenus[wsubmenuM].append(submenu1)
 
                 wsubmenu1.SetSubMenu(wsubmenuM)
                 self.connect_menu.AppendItem(wsubmenu1)
@@ -53,14 +55,23 @@ class ThagMainFrame(ThagMainFrameBase):
 
         ##TODO: Fix this so that it works better
 
+        for o in self.subconmenus.keys():
+            for p in self.subconmenus[o]:
+                o.Delete(p.GetId())
+
+
+        for o in self.connectmenus:
+            self.connect_menu.Delete(o.GetId())
+
         #for o in self.connectmenus:
-            #self.connect_menu.Delete(o.GetId())
+            #o.Destroy(o.GetId())
 
         for o in self.editmenus:
             self.edit_menu.Delete(o.GetId())
 
         self.connectmenus = []
         self.editmenus = []
+        self.subconmenus = {}
 
     def refresh(self):
         self.destroyWorldMenus()
