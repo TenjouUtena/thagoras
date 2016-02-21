@@ -331,6 +331,7 @@ class ThagPersonInfoBase ( wx.Frame ):
 		self.Centre( wx.BOTH )
 		
 		# Connect Events
+		self.Bind( wx.EVT_CLOSE, self.OnClose )
 		self.person_selector.Bind( wx.EVT_COMBOBOX, self.OnSelectPerson )
 	
 	def __del__( self ):
@@ -338,6 +339,9 @@ class ThagPersonInfoBase ( wx.Frame ):
 	
 	
 	# Virtual event handlers, overide them in your derived class
+	def OnClose( self, event ):
+		event.Skip()
+	
 	def OnSelectPerson( self, event ):
 		event.Skip()
 	

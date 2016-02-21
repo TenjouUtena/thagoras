@@ -4,6 +4,7 @@ import obj.world
 from ThagGuiBase import *
 import webbrowser, re, urllib2, StringIO
 from util.url import urlre, urlImageGetter
+import util.logger as logger
 
 class ThagWorldFrame(ThagWorldFrameBase):
     def __init__(self, *args, **kwds):
@@ -11,6 +12,7 @@ class ThagWorldFrame(ThagWorldFrameBase):
         kwds.pop('world')
         ThagWorldFrameBase.__init__(self, *args, **kwds)
         self.telnet = None
+        self.infowindow = None
         self.setColors()
         # Set default Style
         sty = wx.richtext.RichTextAttr()
@@ -89,9 +91,15 @@ class ThagWorldFrame(ThagWorldFrameBase):
                 popup.Destroy()
 
     def ShowInfo(self, evt, player):
-        newWindow = ThagPersonInfo(self, self.world.world.profiles, player)
-        newWindow.Show()
+        if(not self.infowindow):
+            newWindow = ThagPersonInfo(self, self.world.world.profiles, player)
+            self.infowindow = newWindow
+            newWindow.Show()
+        else:
+            self.infowindow.updateInfo(self.world.world.profiles)
 
+    def HideInfo(self):
+        self.infowindow = None
 
     def DoCommand(self, evt, command):
         self.world.send(command)
@@ -262,6 +270,7 @@ class ThagWorldDialog(ThagWorldDialogBase):
     
 class ThagPersonInfo(ThagPersonInfoBase):
     def __init__(self, parent, information, selected = ""):
+        self.parent = parent
         ThagPersonInfoBase.__init__(self, parent)
         self.notebookpanels = {}
         self.updateInfo(information)
@@ -269,6 +278,10 @@ class ThagPersonInfo(ThagPersonInfoBase):
         n = self.person_selector.FindString(selected)
         if(n):
             self.person_selector.SetSelection(n)
+
+    def OnClose(self, evt):
+        self.parent.HideInfo()
+        evt.Skip()
 
 
     def updateInfo(self, information):
@@ -340,7 +353,7 @@ class ThagPersonInfoPane(ThagPersonInfoPaneBase):
 
     def showPicture(self, url):
         url = urlImageGetter(url)
-        print url
+        logger.log(url)
         try:
             buf = urllib2.urlopen(url).read()
             sbuf = StringIO.StringIO(buf)
