@@ -25,6 +25,7 @@ class ThagWorldFrame(ThagWorldFrameBase):
         sty.SetFont(wx.Font(10, wx.FONTFAMILY_MODERN,wx.FONTSTYLE_NORMAL,wx.FONTWEIGHT_NORMAL))
         sty.SetTextColour(self.color[7])
         self.text_output.SetBasicStyle(sty)
+        self.commandHistory = []
 
         self.contexts = {}
         self.text_output.Bind(wx.richtext.EVT_RICHTEXT_RIGHT_CLICK, self.OnRightClick)
