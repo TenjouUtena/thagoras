@@ -27,11 +27,12 @@ class ThagWorldFrame(ThagWorldFrameBase):
         self.text_output.SetBasicStyle(sty)
 
         self.contexts = {}
-        #self.text_output.Bind(wx.EVT_TEXT_URL, self.OnURL)
         self.text_output.Bind(wx.richtext.EVT_RICHTEXT_RIGHT_CLICK, self.OnRightClick)
-        #self.text_output.Bind(wx.EVT_SIZE, self.OnSize)
-        #self.Bind(wx.EVT_MOUSEWHEEL, self.OnScroll)
 
+    def OnClose( self, event ):
+        if(self.telnet):
+            self.telnet.close()
+        event.Skip()
 
     def OnScroll(self, evt):
         self.text_output.ScrollLines(evt.GetWheelRotation()*-0.1)

@@ -35,6 +35,11 @@ class Character():
 
     def setDefaultFilters(self):
         self.filters = []
+
+
+        ff = mufilter.MUF_Tag_Fixer()
+        self.filters.append(ff)
+
         ff = mufilter.MUF_Tag_Decoder()
         self.filters.append(ff)
 

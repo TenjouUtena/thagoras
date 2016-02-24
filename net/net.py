@@ -58,6 +58,9 @@ class TelnetFactory(ClientFactory):
 
 class TelnetClient(StatefulTelnetProtocol):
 
+    def close(self):
+        self.transport.loseConnection()
+
     def terminfo(self, bytes):
         ## We want to write directly, not have this interpreted like poop
         self.transport._write(IAC + SB + TERMINFO + chr(0) + "thagoras" + IAC + SE)

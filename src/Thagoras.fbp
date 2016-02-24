@@ -244,7 +244,7 @@
             <event name="OnAuiPaneRestore"></event>
             <event name="OnAuiRender"></event>
             <event name="OnChar"></event>
-            <event name="OnClose"></event>
+            <event name="OnClose">OnClose</event>
             <event name="OnEnterWindow"></event>
             <event name="OnEraseBackground"></event>
             <event name="OnHibernate"></event>
@@ -3017,7 +3017,7 @@
                             <property name="border">5</property>
                             <property name="flag">wxALIGN_CENTER_HORIZONTAL|wxALIGN_TOP|wxALL|wxEXPAND</property>
                             <property name="proportion">1</property>
-                            <object class="wxScrolledWindow" expanded="1">
+                            <object class="wxScrolledWindow" expanded="0">
                                 <property name="BottomDockable">1</property>
                                 <property name="LeftDockable">1</property>
                                 <property name="RightDockable">1</property>
@@ -3093,7 +3093,7 @@
                                 <event name="OnSetFocus"></event>
                                 <event name="OnSize"></event>
                                 <event name="OnUpdateUI"></event>
-                                <object class="wxBoxSizer" expanded="1">
+                                <object class="wxBoxSizer" expanded="0">
                                     <property name="minimum_size"></property>
                                     <property name="name">picSizer</property>
                                     <property name="orient">wxVERTICAL</property>

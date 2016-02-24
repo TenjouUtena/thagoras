@@ -116,6 +116,7 @@ class ThagWorldFrameBase ( wx.Frame ):
 		self.Layout()
 		
 		# Connect Events
+		self.Bind( wx.EVT_CLOSE, self.OnClose )
 		self.Bind( wx.EVT_MOUSEWHEEL, self.OnScroll )
 		self.text_output.Bind( wx.EVT_SET_FOCUS, self.OnOutFocus )
 		self.text_output.Bind( wx.EVT_SIZE, self.OnSize )
@@ -127,6 +128,9 @@ class ThagWorldFrameBase ( wx.Frame ):
 	
 	
 	# Virtual event handlers, overide them in your derived class
+	def OnClose( self, event ):
+		event.Skip()
+	
 	def OnScroll( self, event ):
 		event.Skip()
 	

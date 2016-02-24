@@ -84,10 +84,21 @@ class MUFilter():
     def run(self, inp):
         pass
 
+## Repair tags that dont' conform to XML spec
+class MUF_Tag_Fixer():
+    def __init__(self):
+        self.type = "Tag Fixer"
+        self.ur = re.compile(r'<([a-zA-Z]+)\s+(\".*?\")(.*?)>')
+
+    def run(self, inp):
+        for c in inp.commands:
+            if(c.type == "Text"):
+                newt = ""
+                c.text = self.ur.sub(r"<\1 href=\2 \3>",c.text)
+
 class MUF_Text_Combiner(MUFilter):
     def __init__(self):
         self.type = "URL Decoder"
-        self.ur = re.compile(url.urlre)
 
     def run(self, inp):
         new = []
