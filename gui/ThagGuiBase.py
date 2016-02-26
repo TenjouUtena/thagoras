@@ -121,6 +121,7 @@ class ThagWorldFrameBase ( wx.Frame ):
 		self.text_output.Bind( wx.EVT_SET_FOCUS, self.OnOutFocus )
 		self.text_output.Bind( wx.EVT_SIZE, self.OnSize )
 		self.text_output.Bind( wx.EVT_TEXT_URL, self.OnURL )
+		self.output.Bind( wx.EVT_KEY_DOWN, self.OnKeyDown )
 		self.output.Bind( wx.EVT_TEXT_ENTER, self.OnSend )
 	
 	def __del__( self ):
@@ -141,6 +142,9 @@ class ThagWorldFrameBase ( wx.Frame ):
 		event.Skip()
 	
 	def OnURL( self, event ):
+		event.Skip()
+	
+	def OnKeyDown( self, event ):
 		event.Skip()
 	
 	def OnSend( self, event ):

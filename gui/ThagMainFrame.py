@@ -52,19 +52,12 @@ class ThagMainFrame(ThagMainFrameBase):
                 self.editmenus.append(submenu2)
 
     def destroyWorldMenus(self):
-
-        ##TODO: Fix this so that it works better
-
         for o in self.subconmenus.keys():
             for p in self.subconmenus[o]:
                 o.Delete(p.GetId())
 
-
         for o in self.connectmenus:
             self.connect_menu.Delete(o.GetId())
-
-        #for o in self.connectmenus:
-            #o.Destroy(o.GetId())
 
         for o in self.editmenus:
             self.edit_menu.Delete(o.GetId())

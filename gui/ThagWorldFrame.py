@@ -9,13 +9,9 @@ from util.url import urlre, urlImageGetter
 import util.logger as logger
 
 
+class ThagOutputWindow():
 
-
-class ThagWorldFrame(ThagWorldFrameBase):
     def __init__(self, *args, **kwds):
-        self.world = kwds['world']
-        kwds.pop('world')
-        ThagWorldFrameBase.__init__(self, *args, **kwds)
         self.telnet = None
         self.infowindow = None
         self.setColors()
@@ -26,9 +22,13 @@ class ThagWorldFrame(ThagWorldFrameBase):
         sty.SetTextColour(self.color[7])
         self.text_output.SetBasicStyle(sty)
         self.commandHistory = []
+        self.isRecall = False
 
         self.contexts = {}
         self.text_output.Bind(wx.richtext.EVT_RICHTEXT_RIGHT_CLICK, self.OnRightClick)
+
+    def pushInput(self, inp):
+        self.commandHistory.insert(0,inp)
 
     def OnClose( self, event ):
         if(self.telnet):
@@ -209,6 +209,14 @@ class ThagWorldFrame(ThagWorldFrameBase):
         ## Let the world handle the text output.
         self.world.send(tts)
         self.output.Clear()
+
+class ThagWorldFrame(ThagOutputWindow, ThagWorldFrameBase):
+    def __init__(self, *args, **kwds):
+        self.world = kwds['world']
+        kwds.pop('world')
+        ThagWorldFrameBase.__init__(self, *args, **kwds)
+        ThagOutputWindow.__init__(self, *args, **kwds)
+
 
 class ThagWorldDialog(ThagWorldDialogBase):
     def __init__(self, parent):

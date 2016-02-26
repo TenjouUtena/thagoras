@@ -36,8 +36,11 @@ def urlImageGetter(url):
     ## This would at least for various boorus
     img = soup.find_all('img',id='image')
     if(img):
+        ## Some booru doesn't return full url for pic on this method
+        if(img[0]['src'][0] == '/'):
+            return 'http://' + host + img[0]['src']
         return(img[0]['src'])
-    ## Some booru doesn't reutn full url for pic on this method
+
 
     ##Sankaku seems to 403 us for beign a robbit.
 
