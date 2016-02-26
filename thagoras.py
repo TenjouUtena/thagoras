@@ -27,15 +27,16 @@ if __name__ == "__main__":
 
     worlds = []
 
-    data = settings.LoadSafe()
-    if(data):
-        worlds = data[0]
+    #data = settings.LoadSafe()
+    #if(data):
+    #    worlds = data[0]
 
     #Debug World:
     #worlds.append(World("Penn - Asuka","penultimatemush.com",9500))
 
     app = Thagoras(0)
     thag_main_frame = ThagMainFrame(None, wx.ID_ANY, "",worlds=worlds)
+    thag_main_frame.load()
     app.SetTopWindow(thag_main_frame)
     thag_main_frame.Show()
 

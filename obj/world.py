@@ -8,18 +8,18 @@ class Character():
         self.user = user
         self.password = password
         self.setupVars()
-        
 
     def oob(self, info):
         res = self.oobre.match(info)
-        command = res.group(1)
-        comlist = command.split('.')
+        if(res):
+            command = res.group(1)
+            comlist = command.split('.')
 
-        if(comlist[0].lower() == 'info'):
-            ## We have an info message
-            if(not self.world.profiles.has_key(comlist[1])):
-                self.world.profiles[comlist[1]] = {}
-            self.world.profiles[comlist[1]][comlist[2]] = json.loads(res.group(3))
+            if(comlist[0].lower() == 'info'):
+                ## We have an info message
+                if(not self.world.profiles.has_key(comlist[1])):
+                    self.world.profiles[comlist[1]] = {}
+                self.world.profiles[comlist[1]][comlist[2]] = json.loads(res.group(3))
 
     def getWidth(self):
         return self.gui.getWidth()

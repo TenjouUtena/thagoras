@@ -41,7 +41,13 @@ class ThagMainFrameBase ( wx.Frame ):
 		
 		self.edit_menu.AppendSeparator()
 		
-		self.thag_main_frame_menubar.Append( self.edit_menu, u"Edit" ) 
+		self.thag_main_frame_menubar.Append( self.edit_menu, u"Worlds" ) 
+		
+		self.m_menu4 = wx.Menu()
+		self.m_menuItem41 = wx.MenuItem( self.m_menu4, wx.ID_ANY, u"Settings...", wx.EmptyString, wx.ITEM_NORMAL )
+		self.m_menu4.AppendItem( self.m_menuItem41 )
+		
+		self.thag_main_frame_menubar.Append( self.m_menu4, u"Options" ) 
 		
 		self.SetMenuBar( self.thag_main_frame_menubar )
 		
@@ -52,15 +58,20 @@ class ThagMainFrameBase ( wx.Frame ):
 		self.Layout()
 		
 		# Connect Events
+		self.Bind( wx.EVT_CLOSE, self.OnClose )
 		self.Bind( wx.EVT_MENU, self.DoLoad, id = self.m_menuItem3.GetId() )
 		self.Bind( wx.EVT_MENU, self.DoSave, id = self.m_menuItem4.GetId() )
 		self.Bind( wx.EVT_MENU, self.OnNewWorld, id = self.m_menuItem2.GetId() )
+		self.Bind( wx.EVT_MENU, self.OnSettings, id = self.m_menuItem41.GetId() )
 	
 	def __del__( self ):
 		pass
 	
 	
 	# Virtual event handlers, overide them in your derived class
+	def OnClose( self, event ):
+		event.Skip()
+	
 	def DoLoad( self, event ):
 		event.Skip()
 	
@@ -69,6 +80,56 @@ class ThagMainFrameBase ( wx.Frame ):
 	
 	def OnNewWorld( self, event ):
 		event.Skip()
+	
+	def OnSettings( self, event ):
+		event.Skip()
+	
+
+###########################################################################
+## Class ThagMainDialogBase
+###########################################################################
+
+class ThagMainDialogBase ( wx.Dialog ):
+	
+	def __init__( self, parent ):
+		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = wx.EmptyString, pos = wx.DefaultPosition, size = wx.DefaultSize, style = wx.DEFAULT_DIALOG_STYLE )
+		
+		self.SetSizeHintsSz( wx.DefaultSize, wx.DefaultSize )
+		
+		bSizer13 = wx.BoxSizer( wx.VERTICAL )
+		
+		fgSizer4 = wx.FlexGridSizer( 0, 2, 0, 0 )
+		fgSizer4.SetFlexibleDirection( wx.BOTH )
+		fgSizer4.SetNonFlexibleGrowMode( wx.FLEX_GROWMODE_SPECIFIED )
+		
+		self.m_staticText11 = wx.StaticText( self, wx.ID_ANY, u"Save on Close?", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText11.Wrap( -1 )
+		fgSizer4.Add( self.m_staticText11, 0, wx.ALL, 5 )
+		
+		self.save_on_close = wx.CheckBox( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+		fgSizer4.Add( self.save_on_close, 0, wx.ALL, 5 )
+		
+		
+		bSizer13.Add( fgSizer4, 1, wx.EXPAND, 5 )
+		
+		m_sdbSizer3 = wx.StdDialogButtonSizer()
+		self.m_sdbSizer3OK = wx.Button( self, wx.ID_OK )
+		m_sdbSizer3.AddButton( self.m_sdbSizer3OK )
+		self.m_sdbSizer3Cancel = wx.Button( self, wx.ID_CANCEL )
+		m_sdbSizer3.AddButton( self.m_sdbSizer3Cancel )
+		m_sdbSizer3.Realize();
+		
+		bSizer13.Add( m_sdbSizer3, 1, wx.EXPAND, 5 )
+		
+		
+		self.SetSizer( bSizer13 )
+		self.Layout()
+		bSizer13.Fit( self )
+		
+		self.Centre( wx.BOTH )
+	
+	def __del__( self ):
+		pass
 	
 
 ###########################################################################
@@ -168,7 +229,7 @@ class ThagWorldDialogBase ( wx.Dialog ):
 		
 		self.m_staticText8 = wx.StaticText( self, wx.ID_ANY, u"World Info:", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText8.Wrap( -1 )
-		bSizer4.Add( self.m_staticText8, 0, wx.ALL, 5 )
+		bSizer4.Add( self.m_staticText8, 0, wx.ALL, 2 )
 		
 		fgSizer1 = wx.FlexGridSizer( 0, 2, 0, 0 )
 		fgSizer1.SetFlexibleDirection( wx.BOTH )
@@ -176,32 +237,41 @@ class ThagWorldDialogBase ( wx.Dialog ):
 		
 		self.m_staticText1 = wx.StaticText( self, wx.ID_ANY, u"Name:", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText1.Wrap( -1 )
-		fgSizer1.Add( self.m_staticText1, 0, wx.ALL, 5 )
+		fgSizer1.Add( self.m_staticText1, 0, wx.ALL, 1 )
 		
 		self.world_name = wx.TextCtrl( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
-		fgSizer1.Add( self.world_name, 0, wx.ALL|wx.EXPAND, 5 )
+		fgSizer1.Add( self.world_name, 0, wx.ALL|wx.EXPAND, 1 )
 		
 		self.m_staticText2 = wx.StaticText( self, wx.ID_ANY, u"Address:", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText2.Wrap( -1 )
-		fgSizer1.Add( self.m_staticText2, 0, wx.ALL, 5 )
+		fgSizer1.Add( self.m_staticText2, 0, wx.ALL, 1 )
 		
 		self.world_address = wx.TextCtrl( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
-		fgSizer1.Add( self.world_address, 0, wx.ALL|wx.EXPAND, 5 )
+		fgSizer1.Add( self.world_address, 0, wx.ALL|wx.EXPAND, 1 )
 		
 		self.m_staticText3 = wx.StaticText( self, wx.ID_ANY, u"Port:", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText3.Wrap( -1 )
-		fgSizer1.Add( self.m_staticText3, 0, wx.ALL, 5 )
+		fgSizer1.Add( self.m_staticText3, 0, wx.ALL, 1 )
 		
 		self.world_port = wx.TextCtrl( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
-		fgSizer1.Add( self.world_port, 0, wx.ALL|wx.EXPAND, 5 )
+		fgSizer1.Add( self.world_port, 0, wx.ALL|wx.EXPAND, 1 )
+		
+		self.m_staticText9 = wx.StaticText( self, wx.ID_ANY, u"SSL?", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText9.Wrap( -1 )
+		fgSizer1.Add( self.m_staticText9, 0, wx.ALL, 1 )
+		
+		self.world_ssl = wx.CheckBox( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+		fgSizer1.Add( self.world_ssl, 0, wx.ALL, 1 )
 		
 		self.m_staticText4 = wx.StaticText( self, wx.ID_ANY, u"Choose Font:", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText4.Wrap( -1 )
-		fgSizer1.Add( self.m_staticText4, 0, wx.ALL, 5 )
+		fgSizer1.Add( self.m_staticText4, 0, wx.ALL, 1 )
 		
 		self.world_font = wx.FontPickerCtrl( self, wx.ID_ANY, wx.Font( wx.NORMAL_FONT.GetPointSize(), 70, 90, 90, False, "Lucida Console" ), wx.DefaultPosition, wx.DefaultSize, wx.FNTP_DEFAULT_STYLE )
 		self.world_font.SetMaxPointSize( 100 ) 
-		fgSizer1.Add( self.world_font, 0, wx.ALL|wx.EXPAND, 5 )
+		self.world_font.Enable( False )
+		
+		fgSizer1.Add( self.world_font, 0, wx.ALL|wx.EXPAND, 1 )
 		
 		
 		bSizer4.Add( fgSizer1, 0, wx.EXPAND, 2 )

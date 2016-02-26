@@ -2,12 +2,10 @@
 
 from twisted.internet.endpoints import TCP4ClientEndpoint, SSL4ClientEndpoint
 from twisted.internet.protocol import ClientFactory
-from twisted.conch.telnet import TelnetTransport, StatefulTelnetProtocol,   IAC, SB, SE, Telnet
-from twisted.internet import reactor, ssl, error
+from twisted.conch.telnet import TelnetTransport, StatefulTelnetProtocol, IAC, SB, SE, Telnet
+from twisted.internet import reactor, error
 from twisted.python.modules import getModule
 from twisted.protocols import basic
-
-from OpenSSL import crypto
 
 import util.logger as logger
 
@@ -20,20 +18,15 @@ GMCP = chr(201)
 
 
 def connect(host, port, gui, world):
-    ep = TCP4ClientEndpoint(reactor, host, port)
+    if(world.world.ssl):
+        from twisted.internet import ssl
+        ep = SSL4ClientEndpoint(reactor, host, port, ssl.ClientContextFactory())
+    else:
+        ep = TCP4ClientEndpoint(reactor, host, port)
     tf = TelnetFactory(gui, world)
     tf.protocol = TelnetClient
     tt = ep.connect(tf)
     return tt
-
-def connectSSL(host, port, gui, world):
-    ep = SSL4ClientEndpoint(reactor, host, port, ssl.ClientContextFactory())
-    tf = TelnetFactory(gui, world)
-    tf.protocol = TelnetClient
-    tt = ep.connect(tf)
-    return tt
-
-
 
 class TelnetFactory(ClientFactory):
     def __init__(self, gui, world):
@@ -47,7 +40,7 @@ class TelnetFactory(ClientFactory):
 
     def setLogoutCommand(self,cmd):
         self.exit_command = cmd
- 
+
     def clientConnectionLost(self, connector, reason):
         pass
 
@@ -90,7 +83,6 @@ class TelnetClient(StatefulTelnetProtocol):
         return rr
 
     def enableLocal(self, option):
-        
         ## Allow us to be asked about TERMINFO
         if(option == TERMINFO):
             return True
@@ -157,7 +149,7 @@ class TelnetClient(StatefulTelnetProtocol):
 
         ## We want to make sure we're sending the autocon at _about_ the right time
         ## so we look for the sting 'con' as in 'connect'
-        ## Only MUSH-style supported right now.   ゴメンナサイ    
+        ## Only MUSH-style supported right now.   ゴメンナサイ
         if(not self.hasconned):
             if(line.find('con') != -1):
                 self.transport.write(("con %s %s\n" % (world.user, world.password)).encode('cp1252'))
@@ -168,6 +160,5 @@ class TelnetClient(StatefulTelnetProtocol):
             world.recv(line)
 
     def write(self,command):
-        return self.sendLine(command)       
-
+        return self.sendLine(command)
 

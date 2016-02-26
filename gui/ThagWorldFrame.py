@@ -232,6 +232,7 @@ class ThagWorldDialog(ThagWorldDialogBase):
         self.world_name.SetValue(world.name)
         self.world_address.SetValue(world.address)
         self.world_port.SetValue(str(world.port))
+        self.world_ssl.SetValue(world.ssl)
 
 
         cc = 0
@@ -248,6 +249,7 @@ class ThagWorldDialog(ThagWorldDialogBase):
         world.name = self.world_name.GetValue()
         world.address = self.world_address.GetValue()
         world.port = int(self.world_port.GetValue())
+        world.ssl = self.world_ssl.GetValue()
 
         world.chars = copy.copy(self.clist.values())
         world.setCharWorld()

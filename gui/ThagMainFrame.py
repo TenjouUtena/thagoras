@@ -21,6 +21,8 @@ class ThagMainFrame(ThagMainFrameBase):
 
         ThagMainFrameBase.__init__(self, None)
 
+        self.prefs = {}
+
         self.connectmenus = []
         self.subconmenus = {}
         self.editmenus = []
@@ -88,8 +90,13 @@ class ThagMainFrame(ThagMainFrameBase):
             dlg.writeObj(world)
             self.refresh()
 
+    def OnClose(self, event):
+        if(self.prefs.get('saveonclose')):
+            self.save()
+        event.Skip()
 
-
+    def save(self):
+        settings.Save(self.worlds, self.prefs)
 
     def OnNewWorld(self, event):
         dlg = ThagWorldDialog(self)
@@ -101,18 +108,45 @@ class ThagMainFrame(ThagMainFrameBase):
             self.refresh()
 
 
+    def OnSettings(self, event):
+        dlg = ThagMainDialog(self)
+
+        dlg.fillForm(self.prefs)
+
+        if dlg.ShowModal() == wx.ID_OK:
+            dlg.writeObj(self.prefs)
+
     def DoLoad(self, event):
+        self.load()
+
+    ## Unpack the loaded data
+    def load(self):
         self.destroyWorldMenus()
         data = settings.Load()
         if(data):
-            worlds = data[0]
-
+            self.worlds = data[0]
+        if(len(data) >= 2):
+            self.prefs = data[1]
         self.makeWorldMenus()
 
     def DoSave(self, event):
-        settings.Save(self.worlds)
+        self.save()
+
+    def OnOpen(self, event):
+        self.load()
+        event.Skip()
 
 
 
 
+
+class ThagMainDialog(ThagMainDialogBase):
+    def fillForm(self, prefs):
+        if(prefs.get('saveonclose')):
+            self.save_on_close.SetValue(True);
+
+
+    def writeObj(self, prefs):
+        prefs['saveonclose'] = self.save_on_close.GetValue()
+        print prefs
 
