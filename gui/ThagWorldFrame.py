@@ -27,6 +27,34 @@ class ThagOutputWindow():
         self.contexts = {}
         self.text_output.Bind(wx.richtext.EVT_RICHTEXT_RIGHT_CLICK, self.OnRightClick)
 
+    def OnKeyDown(self, event):
+        key = event.GetKeyCode()
+
+        ## Check for command recall
+        if(key == wx.WXK_UP or key == wx.WXK_DOWN):
+            if(key == wx.WXK_UP):
+                if(not self.isRecall):
+                    self.isRecall = True
+                    self.commandHistoryIndex = 0
+                else:
+                    if(self.commandHistoryIndex < len(self.commandHistory)):
+                        self.commandHistoryIndex += 1
+
+            if(key == wx.WXK_DOWN):
+                if(self.isRecall):
+                    if(self.commandHistoryIndex == 0):
+                        self.isRecall = False
+                        self.output.Clear()
+                    else:
+                        self.commandHistoryIndex -= 1
+
+            if(self.commandHistoryIndex >= len(self.commandHistory) and self.isRecall):
+                self.output.Clear()
+                self.output.AppendText(self.commandHistory[self.commandHistoryIndex])
+
+        event.Skip()
+
+
     def pushInput(self, inp):
         self.commandHistory.insert(0,inp)
 
@@ -205,6 +233,8 @@ class ThagOutputWindow():
 
     def OnSend(self, event):
         tts = self.output.GetLineText(0)
+
+        self.pushInput(tts)
 
         ## Let the world handle the text output.
         self.world.send(tts)

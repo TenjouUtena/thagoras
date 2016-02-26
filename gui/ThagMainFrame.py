@@ -30,6 +30,9 @@ class ThagMainFrame(ThagMainFrameBase):
         ## Programatically add the worlds.
         self.makeWorldMenus()
 
+    def OnExitCommand(self, event):
+        self.Destroy()
+
 
     def makeWorldMenus(self):
         if(self.worlds):
@@ -132,9 +135,6 @@ class ThagMainFrame(ThagMainFrameBase):
     def DoSave(self, event):
         self.save()
 
-    def OnOpen(self, event):
-        self.load()
-        event.Skip()
 
 
 

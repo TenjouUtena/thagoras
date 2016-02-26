@@ -24,11 +24,16 @@ class ThagMainFrameBase ( wx.Frame ):
 		
 		self.thag_main_frame_menubar = wx.MenuBar( 0 )
 		self.m_menu3 = wx.Menu()
-		self.m_menuItem3 = wx.MenuItem( self.m_menu3, wx.ID_ANY, u"Load", wx.EmptyString, wx.ITEM_NORMAL )
+		self.m_menuItem3 = wx.MenuItem( self.m_menu3, wx.ID_ANY, u"&Load", wx.EmptyString, wx.ITEM_NORMAL )
 		self.m_menu3.AppendItem( self.m_menuItem3 )
 		
-		self.m_menuItem4 = wx.MenuItem( self.m_menu3, wx.ID_ANY, u"Save", wx.EmptyString, wx.ITEM_NORMAL )
+		self.m_menuItem4 = wx.MenuItem( self.m_menu3, wx.ID_ANY, u"&Save", wx.EmptyString, wx.ITEM_NORMAL )
 		self.m_menu3.AppendItem( self.m_menuItem4 )
+		
+		self.m_menu3.AppendSeparator()
+		
+		self.m_menuItem5 = wx.MenuItem( self.m_menu3, wx.ID_ANY, u"E&xit", wx.EmptyString, wx.ITEM_NORMAL )
+		self.m_menu3.AppendItem( self.m_menuItem5 )
 		
 		self.thag_main_frame_menubar.Append( self.m_menu3, u"File" ) 
 		
@@ -61,6 +66,7 @@ class ThagMainFrameBase ( wx.Frame ):
 		self.Bind( wx.EVT_CLOSE, self.OnClose )
 		self.Bind( wx.EVT_MENU, self.DoLoad, id = self.m_menuItem3.GetId() )
 		self.Bind( wx.EVT_MENU, self.DoSave, id = self.m_menuItem4.GetId() )
+		self.Bind( wx.EVT_MENU, self.OnExitCommand, id = self.m_menuItem5.GetId() )
 		self.Bind( wx.EVT_MENU, self.OnNewWorld, id = self.m_menuItem2.GetId() )
 		self.Bind( wx.EVT_MENU, self.OnSettings, id = self.m_menuItem41.GetId() )
 	
@@ -76,6 +82,9 @@ class ThagMainFrameBase ( wx.Frame ):
 		event.Skip()
 	
 	def DoSave( self, event ):
+		event.Skip()
+	
+	def OnExitCommand( self, event ):
 		event.Skip()
 	
 	def OnNewWorld( self, event ):
