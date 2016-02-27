@@ -37,7 +37,7 @@ class ThagOutputWindow():
                     self.isRecall = True
                     self.commandHistoryIndex = 0
                 else:
-                    if(self.commandHistoryIndex < len(self.commandHistory)):
+                    if(self.commandHistoryIndex < (len(self.commandHistory)-1)):
                         self.commandHistoryIndex += 1
 
             if(key == wx.WXK_DOWN):
@@ -48,7 +48,7 @@ class ThagOutputWindow():
                     else:
                         self.commandHistoryIndex -= 1
 
-            if(self.commandHistoryIndex >= len(self.commandHistory) and self.isRecall):
+            if(self.commandHistoryIndex < len(self.commandHistory) and self.isRecall):
                 self.output.Clear()
                 self.output.AppendText(self.commandHistory[self.commandHistoryIndex])
 
@@ -57,6 +57,7 @@ class ThagOutputWindow():
 
     def pushInput(self, inp):
         self.commandHistory.insert(0,inp)
+        self.commandHistory = self.commandHistory[:15]
 
     def OnClose( self, event ):
         if(self.telnet):

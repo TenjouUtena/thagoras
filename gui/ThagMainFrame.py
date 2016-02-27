@@ -148,5 +148,5 @@ class ThagMainDialog(ThagMainDialogBase):
 
     def writeObj(self, prefs):
         prefs['saveonclose'] = self.save_on_close.GetValue()
-        print prefs
+
 
