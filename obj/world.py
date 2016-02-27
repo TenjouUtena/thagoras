@@ -1,4 +1,4 @@
-import util.logger as logger
+
 import mufilter
 import re, json
 
@@ -62,9 +62,6 @@ class Character():
         self.telnet.write(str(line))
 
     def recv(self, line):
-        #logger.log(line)
-
-
         ## Run Filters
         ii = mufilter.Input(line)
         for f in self.filters:

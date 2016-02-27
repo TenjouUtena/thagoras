@@ -8,31 +8,17 @@ from obj.world import World
 from util import settings
 
 
-def setTelnetProps(gui, telnet):
-    print called
-    print gui
-    print telnet
-    gui.telnet = telnet
-
 class ThagMainFrame(ThagMainFrameBase):
     def __init__(self, *args, **kwds):
-        self.worlds = kwds['worlds']
-        kwds.pop('worlds')
-
         ThagMainFrameBase.__init__(self, None)
-
+        self.worlds = []
         self.prefs = {}
-
         self.connectmenus = []
         self.subconmenus = {}
         self.editmenus = []
 
-        ## Programatically add the worlds.
-        self.makeWorldMenus()
-
     def OnExitCommand(self, event):
         self.Destroy()
-
 
     def makeWorldMenus(self):
         if(self.worlds):
@@ -123,14 +109,19 @@ class ThagMainFrame(ThagMainFrameBase):
         self.load()
 
     ## Unpack the loaded data
-    def load(self):
+    def load(self, safe=False):
         self.destroyWorldMenus()
-        data = settings.Load()
-        if(data):
-            self.worlds = data[0]
-        if(len(data) >= 2):
-            self.prefs = data[1]
-        self.makeWorldMenus()
+        try:
+            data = settings.Load()
+        except IOError:
+            if(not safe):
+                wx.MessageBox("I couldn't find the file to load, or another error occured","File Error")
+        else:
+            if(data):
+                self.worlds = data[0]
+            if(len(data) >= 2):
+                self.prefs = data[1]
+            self.makeWorldMenus()
 
     def DoSave(self, event):
         self.save()

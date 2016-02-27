@@ -1,7 +1,7 @@
 from HTMLParser import HTMLParser
 from htmlentitydefs import name2codepoint
 from copy import deepcopy
-import util.logger as logger
+
 import re
 import util.url as url
 

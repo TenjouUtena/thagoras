@@ -7,7 +7,9 @@ from twisted.internet import reactor, error
 from twisted.python.modules import getModule
 from twisted.protocols import basic
 
-import util.logger as logger
+import logging
+
+logger = logging.getLogger(__name__)
 
 ## Defines
 
@@ -94,7 +96,7 @@ class TelnetClient(StatefulTelnetProtocol):
             return True
 
         ## Log anything er aren't currently responding too
-        logger.log("NEGOTIATE>%d" % ord(option))
+        logger.info("Server wanted us to %d" % ord(option))
 
         return False
 
@@ -103,23 +105,20 @@ class TelnetClient(StatefulTelnetProtocol):
             return True
 
         ## Log anything er aren't currently responding too
-        logger.log("NEGOTIATE SERVER>%d" % ord(option))
+        logger.info("Server wanted to %d" % ord(option))
         return False
 
     def disableLocal(self, option):
-        rr = StatefulTelnetProtocol.enableLocal(self, option)
-        logger.log("D.NEGOTIATE>%d" % ord(option))
-        return rr
+        logger.info("Server told us to stop %d" % ord(option))
+        return False
 
     def disableRemote(self, option):
-        rr = StatefulTelnetProtocol.enableLocal(self, option)
-        logger.log("D.NEGOTIATE SERVER>%d" % ord(option))
-        return rr
+        logger.info("Server wanted to stop %d" % ord(option))
+        return False
 
     def connectionLost(self, reason):
-        #print("Lost.")
         if not reason.check(error.ConnectionClosed):
-            print("BAD:", reason.value)
+            logging.warning("Lost Connection: %s" % reason.value)
 
     def connectionMade(self):
         ## Twisted is put together weird

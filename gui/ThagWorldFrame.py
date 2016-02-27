@@ -6,8 +6,10 @@ import threading
 import obj.world
 from ThagGuiBase import *
 from util.url import urlre, urlImageGetter
-import util.logger as logger
 
+
+import logging
+logger = logging.getLogger(__name__)
 
 class ThagOutputWindow():
 
@@ -413,7 +415,7 @@ class ThagPersonInfoPane(ThagPersonInfoPaneBase):
 
     def showPicture(self, url):
         url = urlImageGetter(url)
-        logger.log(url)
+        logger.info("Tried to load URL: %s" % url)
         try:
             buf = urllib2.urlopen(url).read()
             sbuf = StringIO.StringIO(buf)
