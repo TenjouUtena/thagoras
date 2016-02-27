@@ -2,6 +2,10 @@
 
 import re
 import bs4, urllib2
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 urlre = '(http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.\&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F\&\#]))+)'
 
@@ -11,10 +15,7 @@ def urlImageGetter(url):
     hostfind = re.compile(r'[a-z0-9.\-]+[.][a-z]{2,4}/')
     imageendings = ['png','gif','jpg','bmp']
 
-    ## ask it if it will return an image:
-    res = urllib2.urlopen(url)
-    if(res.info().gettype().lower().startswith('image')):
-        return url
+    ## Try everything we can without opening the url.  THis is probably faster.
 
     ##If we end in a image ending, then we're probably already an image url
     if(url[-3:] in imageendings):
@@ -24,6 +25,20 @@ def urlImageGetter(url):
     host = ""
     if(hostmatch):
         host = hostmatch.group(0)[:-1]
+
+    ## The rest of the methods read the target URL:
+
+    try:
+        res = urllib2.urlopen(url)
+    except urllib2.HTTPError as e:
+        logger.info("HTTPError %d %s on %s" % (e.code, e.msg, url))
+        return None
+
+
+
+    ## ask it if it will return an image:
+    if(res.info().gettype().lower().startswith('image')):
+        return url
 
     ## First if it is imgur, just append .png on the end, imgur will send something sane back
     ## This doesn't work for albums. ☹

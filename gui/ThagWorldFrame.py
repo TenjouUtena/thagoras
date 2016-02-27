@@ -413,8 +413,14 @@ class ThagPersonInfoPane(ThagPersonInfoPaneBase):
         self.person_picture.SetBitmap(pic)
         self.m_scrolledWindow1.SendSizeEvent()
 
-    def showPicture(self, url):
-        url = urlImageGetter(url)
+    def showPicture(self, surl):
+        url = urlImageGetter(surl)
+
+        ## If the funciton returns None, then nothing to do
+        if(not url):
+            logger.info("Error finding URL for %s" % surl)
+            return
+        
         logger.info("Tried to load URL: %s" % url)
         try:
             buf = urllib2.urlopen(url).read()
