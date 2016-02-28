@@ -29,34 +29,53 @@ class Character():
         self.telnet = None
         self.outputs = {}
         self.inputs = {}
-        self.filters = []
+        self.filters = {}
         self.setDefaultFilters()
         self.oobre = re.compile(r'(([0-9a-zA-Z_\'\"\- ]+\.)*[0-9a-zA-Z_\'\"\-]+) ({.*?})')
+        self.mxp = 'mxp'
+        self.notmxp = 'notmap'
+        self.mxp = False
 
     def setDefaultFilters(self):
-        self.filters = []
+        self.filters = {}
 
+        ## Set MXp filters
+        self.filters['mxp'] = []
 
         ff = mufilter.MUF_Tag_Fixer()
-        self.filters.append(ff)
+        self.filters['mxp'].append(ff)
 
         ff = mufilter.MUF_Tag_Decoder()
-        self.filters.append(ff)
+        self.filters['mxp'].append(ff)
 
         ff = mufilter.MUF_SimpleTag_Interpreter()
-        self.filters.append(ff)
+        self.filters['mxp'].append(ff)
 
         ff = mufilter.MUF_ANSI()
-        self.filters.append(ff)
+        self.filters['mxp'].append(ff)
 
         ff = mufilter.MUF_MXP_Send_Handler()
-        self.filters.append(ff)
+        self.filters['mxp'].append(ff)
 
         ff = mufilter.MUF_Text_Combiner()
-        self.filters.append(ff)
+        self.filters['mxp'].append(ff)
 
         ff = mufilter.MUF_URL_Handler()
-        self.filters.append(ff)
+        self.filters['mxp'].append(ff)
+
+        ## Set non-MXP Filters
+        self.filters['notmxp'] = []
+
+        ff = mufilter.MUF_ANSI()
+        self.filters['notmxp'].append(ff)
+
+        ff = mufilter.MUF_Text_Combiner()
+        self.filters['notmxp'].append(ff)
+
+        ff = mufilter.MUF_URL_Handler()
+        self.filters['notmxp'].append(ff)
+
+
 
     def send(self, line):
         self.telnet.write(str(line))
@@ -64,7 +83,11 @@ class Character():
     def recv(self, line):
         ## Run Filters
         ii = mufilter.Input(line)
-        for f in self.filters:
+        if(self.mxp):
+            fil = 'mxp'
+        else:
+            fil = 'notmxp'
+        for f in self.filters[fil]:
             f.run(ii)
 
         self.gui.writeGUI(ii)

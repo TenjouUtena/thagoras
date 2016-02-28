@@ -150,6 +150,7 @@ class TelnetClient(StatefulTelnetProtocol):
         res = line.find("This world is Pueblo 1.10 Enhanced.")
         if(res != -1):
             self.transport.write("PUEBLOCLIENT 1.10\n")
+            self.factory.world.mxp = True
 
         ## We want to make sure we're sending the autocon at _about_ the right time
         ## so we look for the sting 'con' as in 'connect'
