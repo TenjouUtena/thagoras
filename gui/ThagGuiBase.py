@@ -24,10 +24,10 @@ class ThagMainFrameBase ( wx.Frame ):
 		
 		self.thag_main_frame_menubar = wx.MenuBar( 0 )
 		self.m_menu3 = wx.Menu()
-		self.m_menuItem3 = wx.MenuItem( self.m_menu3, wx.ID_ANY, u"&Load", wx.EmptyString, wx.ITEM_NORMAL )
+		self.m_menuItem3 = wx.MenuItem( self.m_menu3, wx.ID_ANY, u"Load", wx.EmptyString, wx.ITEM_NORMAL )
 		self.m_menu3.AppendItem( self.m_menuItem3 )
 		
-		self.m_menuItem4 = wx.MenuItem( self.m_menu3, wx.ID_ANY, u"&Save", wx.EmptyString, wx.ITEM_NORMAL )
+		self.m_menuItem4 = wx.MenuItem( self.m_menu3, wx.ID_ANY, u"Save", wx.EmptyString, wx.ITEM_NORMAL )
 		self.m_menu3.AppendItem( self.m_menuItem4 )
 		
 		self.m_menu3.AppendSeparator()
@@ -271,6 +271,13 @@ class ThagWorldDialogBase ( wx.Dialog ):
 		
 		self.world_ssl = wx.CheckBox( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
 		fgSizer1.Add( self.world_ssl, 0, wx.ALL, 1 )
+		
+		self.m_staticText11 = wx.StaticText( self, wx.ID_ANY, u"Scrollback Lines", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText11.Wrap( -1 )
+		fgSizer1.Add( self.m_staticText11, 0, wx.ALL, 5 )
+		
+		self.lines_scrollback = wx.TextCtrl( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+		fgSizer1.Add( self.lines_scrollback, 0, wx.ALL|wx.EXPAND, 5 )
 		
 		self.m_staticText4 = wx.StaticText( self, wx.ID_ANY, u"Choose Font:", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText4.Wrap( -1 )

@@ -61,7 +61,9 @@ class TelnetClient(StatefulTelnetProtocol):
         self.transport._write(IAC + SB + TERMINFO + chr(0) + "thagoras" + IAC + SE)
 
     def oob(self, by):
-        self.factory.world.oob(''.join(by))
+        string = ''.join(by)
+        logger.debug("OOB: %s" % string)
+        self.factory.world.oob(string)
 
     def sendWindowSize(self):
         if(not self.factory.world):
@@ -138,6 +140,9 @@ class TelnetClient(StatefulTelnetProtocol):
             gui.telnet = self
 
     def lineReceived(self, line):
+        ## Debug log every line
+        logger.debug("LINE: %s" % line)
+
         gui = self.factory.gui
         world = self.factory.world
 

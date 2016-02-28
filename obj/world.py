@@ -99,6 +99,7 @@ class World():
         self.inputs = {}
         self.filters = {}
         self.profiles = {}
+        self.lines = 500
 
     def send(self, line):
         self.telnet.write(str(line))

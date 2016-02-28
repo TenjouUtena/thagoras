@@ -3,6 +3,8 @@ import copy
 import webbrowser, re, urllib2, StringIO
 import threading
 
+from twisted.internet import reactor, task
+
 import obj.world
 from ThagGuiBase import *
 from util.url import urlre, urlImageGetter
@@ -28,6 +30,18 @@ class ThagOutputWindow():
 
         self.contexts = {}
         self.text_output.Bind(wx.richtext.EVT_RICHTEXT_RIGHT_CLICK, self.OnRightClick)
+
+        self.trimout = task.LoopingCall(self.trimLength)
+        self.trimout.start(30.0)
+
+    def trimLength(self):
+        ltt = self.world.world.lines
+        lines = self.text_output.GetNumberOfLines()
+        if(lines > ltt):
+            diff = lines - ltt
+            finalpos = self.text_output.XYToPosition(0,diff)
+            self.text_output.Delete((0,finalpos))
+
 
     def OnKeyDown(self, event):
         key = event.GetKeyCode()
@@ -60,6 +74,7 @@ class ThagOutputWindow():
     def pushInput(self, inp):
         self.commandHistory.insert(0,inp)
         self.commandHistory = self.commandHistory[:15]
+        self.isRecall = False
 
     def OnClose( self, event ):
         if(self.telnet):
@@ -266,6 +281,7 @@ class ThagWorldDialog(ThagWorldDialogBase):
         self.world_address.SetValue(world.address)
         self.world_port.SetValue(str(world.port))
         self.world_ssl.SetValue(world.ssl)
+        self.lines_scrollback.SetValue(str(world.lines))
 
 
         cc = 0
@@ -283,6 +299,7 @@ class ThagWorldDialog(ThagWorldDialogBase):
         world.address = self.world_address.GetValue()
         world.port = int(self.world_port.GetValue())
         world.ssl = self.world_ssl.GetValue()
+        world.lines = int(self.lines_scrollback.GetValue())
 
         world.chars = copy.copy(self.clist.values())
         world.setCharWorld()
