@@ -136,6 +136,7 @@ class TelnetClient(StatefulTelnetProtocol):
         gui = self.factory.gui
         world = self.factory.world 
         world.telnet = self
+        world.mxp = False
         if(gui):
             gui.telnet = self
 

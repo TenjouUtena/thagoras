@@ -41,6 +41,7 @@ class ThagOutputWindow():
             diff = lines - ltt
             finalpos = self.text_output.XYToPosition(0,diff)
             self.text_output.Delete((0,finalpos))
+        self.text_output.ShowPosition(self.text_output.LastPosition)
 
 
     def OnKeyDown(self, event):
@@ -77,8 +78,14 @@ class ThagOutputWindow():
         self.isRecall = False
 
     def OnClose( self, event ):
+        ## Close the Telet Connection
         if(self.telnet):
             self.telnet.close()
+        
+        ## Stop Trimming the output
+        self.trimout.stop()
+
+        ## Let wx handle the rest of the cleanup.
         event.Skip()
 
     def OnScroll(self, evt):

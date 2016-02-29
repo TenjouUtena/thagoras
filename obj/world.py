@@ -75,6 +75,9 @@ class Character():
         ff = mufilter.MUF_URL_Handler()
         self.filters['notmxp'].append(ff)
 
+        ff = mufilter.MUF_Add_Newline()
+        self.filters['notmxp'].append(ff)
+
 
 
     def send(self, line):

@@ -84,6 +84,14 @@ class MUFilter():
     def run(self, inp):
         pass
 
+class MUF_Add_Newline():
+    def __init__(self):
+        self.type = "Add a newline"
+
+    def run(self, inp):
+        nl = NewLineCommand()
+        inp.commands.append(nl)
+
 ## Repair tags that dont' conform to XML spec
 class MUF_Tag_Fixer():
     def __init__(self):
@@ -115,6 +123,9 @@ class MUF_Text_Combiner(MUFilter):
                     text = ""
             if contin:
                 new.append(c)
+        if(text != ""):
+            ff = TextCommand(text)
+            new.append(ff)
         inp.commands = new
 
 class MUF_URL_Handler(MUFilter):
