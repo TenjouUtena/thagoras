@@ -35,6 +35,19 @@ class ThagOutputWindow():
         self.trimout.start(30.0)
         self.trimclean = True
 
+    def commandMessage(self, message):
+        self.text_output.SetInsertionPointEnd()
+        self.text_output.BeginTextColour(self.color[9]);
+        self.text_output.BeginBold()
+        self.text_output.WriteText(message + "\n")
+        self.text_output.ShowPosition(self.text_output.LastPosition)
+
+    def connectionFailed(self, reason):
+        self.commandMessage("Connection Failed: %s" % reason)
+        self.telnet = None
+        self.output.Disable()
+        self.button_1.Disable()
+
     def setTrimLength(self):
         self.trimclean = False
 

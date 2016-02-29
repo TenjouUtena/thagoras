@@ -68,6 +68,7 @@ class ThagMainFrame(ThagMainFrameBase):
         charr.gui = ww
 
         tt = net.connect(charr.world.address, charr.world.port, ww, charr)
+        tt.addErrback(ww.connectionFailed)
         ww.Show()
 
     def DoEdit(self, event, world):

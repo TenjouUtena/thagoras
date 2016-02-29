@@ -44,10 +44,12 @@ class TelnetFactory(ClientFactory):
         self.exit_command = cmd
 
     def clientConnectionLost(self, connector, reason):
-        pass
+        if(self.gui):
+            self.gui.connectionFailed(reason)
 
     def clientConnectionFailed(self, connector, reason):
-        pass
+        if(self.gui):
+            self.gui.connectionFailed(reason)
 
 
 
@@ -121,6 +123,12 @@ class TelnetClient(StatefulTelnetProtocol):
     def connectionLost(self, reason):
         if not reason.check(error.ConnectionClosed):
             logging.warning("Lost Connection: %s" % reason.value)
+            if(self.factory.gui):
+                self.factory.gui.connectionFailed(reason.value)
+        else:
+            if(self.factory.gui):
+                self.factory.gui.connectionFailed("Closed")
+
 
     def connectionMade(self):
         ## Twisted is put together weird
