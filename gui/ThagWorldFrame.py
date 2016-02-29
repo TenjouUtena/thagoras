@@ -31,8 +31,12 @@ class ThagOutputWindow():
         self.contexts = {}
         self.text_output.Bind(wx.richtext.EVT_RICHTEXT_RIGHT_CLICK, self.OnRightClick)
 
-        self.trimout = task.LoopingCall(self.trimLength)
+        self.trimout = task.LoopingCall(self.setTrimLength)
         self.trimout.start(30.0)
+        self.trimclean = True
+
+    def setTrimLength(self):
+        self.trimclean = False
 
     def trimLength(self):
         ltt = self.world.world.lines
@@ -41,7 +45,7 @@ class ThagOutputWindow():
             diff = lines - ltt
             finalpos = self.text_output.XYToPosition(0,diff)
             self.text_output.Delete((0,finalpos))
-        self.text_output.ShowPosition(self.text_output.LastPosition)
+        self.trimclean = True
 
 
     def OnKeyDown(self, event):
@@ -81,7 +85,7 @@ class ThagOutputWindow():
         ## Close the Telet Connection
         if(self.telnet):
             self.telnet.close()
-        
+
         ## Stop Trimming the output
         self.trimout.stop()
 
@@ -212,9 +216,10 @@ class ThagOutputWindow():
             c += 1
 
     def writeLine(self, line):
-        self.text_output.AppendText(line)
-        self.text_output.AppendText("\n")
-        self.text_output.ShowPosition(self.text_output.LastPosition)
+        pass
+        #self.text_output.AppendText(line)
+        #self.text_output.AppendText("\n")
+        #self.text_output.ShowPosition(self.text_output.LastPosition)
 
     def writeGUI(self, inp):
         self.text_output.SetInsertionPointEnd()
@@ -225,6 +230,9 @@ class ThagOutputWindow():
                 if(c.text != ""):
                     self.text_output.WriteText(c.text)
             if(c.type == "Newline"):
+                self.text_output.EndBold()
+                self.text_output.EndTextColour()
+                bold = False
                 self.text_output.WriteText("\n")
             if(c.type == "Font"):
                 if(c.sub == "Normal"):
@@ -253,7 +261,9 @@ class ThagOutputWindow():
             if(c.type == "EndURL"):
                 self.text_output.EndURL()
 
-
+        if(not self.trimclean):
+            self.trimLength()
+        self.text_output.SetInsertionPointEnd()
         self.text_output.ShowPosition(self.text_output.LastPosition)
 
     def OnSend(self, event):
