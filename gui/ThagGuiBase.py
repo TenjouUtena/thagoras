@@ -292,39 +292,30 @@ class ThagWorldDialogBase ( wx.Dialog ):
 		
 		bSizer4.Add( fgSizer1, 0, wx.EXPAND, 2 )
 		
-		self.m_staticline1 = wx.StaticLine( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_HORIZONTAL )
-		bSizer4.Add( self.m_staticline1, 0, wx.EXPAND |wx.ALL, 5 )
-		
-		self.m_staticText7 = wx.StaticText( self, wx.ID_ANY, u"Characters:", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_staticText7.Wrap( -1 )
-		bSizer4.Add( self.m_staticText7, 0, wx.ALL, 5 )
-		
+		self.m_panel1 = wx.Panel( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.STATIC_BORDER|wx.TAB_TRAVERSAL )
 		bSizer5 = wx.BoxSizer( wx.VERTICAL )
 		
-		self.char_list = wx.ListCtrl( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LC_REPORT|wx.LC_SINGLE_SEL )
+		self.m_staticText7 = wx.StaticText( self.m_panel1, wx.ID_ANY, u"Characters:", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText7.Wrap( -1 )
+		bSizer5.Add( self.m_staticText7, 0, wx.ALL, 5 )
+		
+		self.char_list = wx.ListCtrl( self.m_panel1, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LC_REPORT|wx.LC_SINGLE_SEL )
 		bSizer5.Add( self.char_list, 0, wx.ALL|wx.EXPAND, 5 )
-		
-		fgSizer2 = wx.FlexGridSizer( 0, 4, 0, 0 )
-		fgSizer2.SetFlexibleDirection( wx.BOTH )
-		fgSizer2.SetNonFlexibleGrowMode( wx.FLEX_GROWMODE_SPECIFIED )
-		
-		
-		bSizer5.Add( fgSizer2, 1, wx.EXPAND, 5 )
 		
 		bSizer6 = wx.BoxSizer( wx.HORIZONTAL )
 		
-		self.m_staticText5 = wx.StaticText( self, wx.ID_ANY, u"User:", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText5 = wx.StaticText( self.m_panel1, wx.ID_ANY, u"User:", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText5.Wrap( -1 )
 		bSizer6.Add( self.m_staticText5, 0, wx.ALL, 5 )
 		
-		self.char_name = wx.TextCtrl( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.char_name = wx.TextCtrl( self.m_panel1, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
 		bSizer6.Add( self.char_name, 0, wx.ALL, 5 )
 		
-		self.m_staticText6 = wx.StaticText( self, wx.ID_ANY, u"Pass:", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText6 = wx.StaticText( self.m_panel1, wx.ID_ANY, u"Pass:", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText6.Wrap( -1 )
 		bSizer6.Add( self.m_staticText6, 0, wx.ALL, 5 )
 		
-		self.char_pass = wx.TextCtrl( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.char_pass = wx.TextCtrl( self.m_panel1, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
 		bSizer6.Add( self.char_pass, 0, wx.ALL, 5 )
 		
 		
@@ -332,26 +323,31 @@ class ThagWorldDialogBase ( wx.Dialog ):
 		
 		bSizer7 = wx.BoxSizer( wx.HORIZONTAL )
 		
-		self.m_button2 = wx.Button( self, wx.ID_ANY, u"Add", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_button2 = wx.Button( self.m_panel1, wx.ID_ANY, u"Add", wx.DefaultPosition, wx.DefaultSize, 0 )
 		bSizer7.Add( self.m_button2, 0, wx.ALL, 5 )
 		
-		self.m_button3 = wx.Button( self, wx.ID_ANY, u"Save", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_button3 = wx.Button( self.m_panel1, wx.ID_ANY, u"Save", wx.DefaultPosition, wx.DefaultSize, 0 )
 		bSizer7.Add( self.m_button3, 0, wx.ALL, 5 )
 		
-		self.m_button4 = wx.Button( self, wx.ID_ANY, u"Remove", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_button4 = wx.Button( self.m_panel1, wx.ID_ANY, u"Remove", wx.DefaultPosition, wx.DefaultSize, 0 )
 		bSizer7.Add( self.m_button4, 0, wx.ALL, 5 )
-		
-		self.m_button5 = wx.Button( self, wx.ID_ANY, u"Advanced...", wx.DefaultPosition, wx.DefaultSize, 0 )
-		bSizer7.Add( self.m_button5, 0, wx.ALL, 5 )
 		
 		
 		bSizer5.Add( bSizer7, 1, wx.EXPAND, 5 )
 		
 		
-		bSizer4.Add( bSizer5, 0, wx.ALL|wx.EXPAND, 5 )
+		self.m_panel1.SetSizer( bSizer5 )
+		self.m_panel1.Layout()
+		bSizer5.Fit( self.m_panel1 )
+		bSizer4.Add( self.m_panel1, 0, wx.EXPAND |wx.ALL, 5 )
 		
-		self.m_staticline2 = wx.StaticLine( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_HORIZONTAL )
-		bSizer4.Add( self.m_staticline2, 0, wx.EXPAND |wx.ALL, 5 )
+		bSizer18 = wx.BoxSizer( wx.HORIZONTAL )
+		
+		self.delete_button = wx.Button( self, wx.ID_ANY, u"Delete World", wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer18.Add( self.delete_button, 0, wx.ALL, 5 )
+		
+		
+		bSizer4.Add( bSizer18, 0, wx.EXPAND, 5 )
 		
 		m_sdbSizer1 = wx.StdDialogButtonSizer()
 		self.m_sdbSizer1OK = wx.Button( self, wx.ID_OK )
@@ -364,7 +360,7 @@ class ThagWorldDialogBase ( wx.Dialog ):
 		bSizer4.Add( m_sdbSizer1, 0, wx.EXPAND|wx.FIXED_MINSIZE, 1 )
 		
 		
-		bSizer3.Add( bSizer4, 1, wx.EXPAND, 5 )
+		bSizer3.Add( bSizer4, 0, wx.EXPAND, 5 )
 		
 		
 		self.SetSizer( bSizer3 )
@@ -374,16 +370,21 @@ class ThagWorldDialogBase ( wx.Dialog ):
 		self.Centre( wx.BOTH )
 		
 		# Connect Events
+		self.Bind( wx.EVT_INIT_DIALOG, self.OnInit )
 		self.char_list.Bind( wx.EVT_LIST_ITEM_SELECTED, self.OnCharSelect )
 		self.m_button2.Bind( wx.EVT_BUTTON, self.OnCharAdd )
 		self.m_button3.Bind( wx.EVT_BUTTON, self.OnCharSave )
 		self.m_button4.Bind( wx.EVT_BUTTON, self.OnCharRemove )
+		self.delete_button.Bind( wx.EVT_BUTTON, self.OnDeleteWorld )
 	
 	def __del__( self ):
 		pass
 	
 	
 	# Virtual event handlers, overide them in your derived class
+	def OnInit( self, event ):
+		event.Skip()
+	
 	def OnCharSelect( self, event ):
 		event.Skip()
 	
@@ -394,6 +395,9 @@ class ThagWorldDialogBase ( wx.Dialog ):
 		event.Skip()
 	
 	def OnCharRemove( self, event ):
+		event.Skip()
+	
+	def OnDeleteWorld( self, event ):
 		event.Skip()
 	
 

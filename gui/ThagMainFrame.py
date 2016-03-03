@@ -18,7 +18,12 @@ class ThagMainFrame(ThagMainFrameBase):
         self.editmenus = []
 
     def OnExitCommand(self, event):
-        self.Destroy()
+        self.Close()
+
+    def OnClose(self, event):
+        if(self.prefs.get('saveonclose')):
+            self.save()
+        event.Skip()
 
     def makeWorldMenus(self):
         if(self.worlds):
@@ -78,12 +83,11 @@ class ThagMainFrame(ThagMainFrameBase):
 
         if dlg.ShowModal() == wx.ID_OK:
             dlg.writeObj(world)
+            if(dlg.deleteme):
+                self.worlds.remove(world)
             self.refresh()
 
-    def OnClose(self, event):
-        if(self.prefs.get('saveonclose')):
-            self.save()
-        event.Skip()
+
 
     def save(self):
         settings.Save(self.worlds, self.prefs)
@@ -91,8 +95,11 @@ class ThagMainFrame(ThagMainFrameBase):
     def OnNewWorld(self, event):
         dlg = ThagWorldDialog(self)
 
+        world = World()
+        dlg.fillForm(world)
+        dlg.OnCharAdd(None)
+
         if dlg.ShowModal() == wx.ID_OK:
-            world = World()
             dlg.writeObj(world)
             self.worlds.append(world)
             self.refresh()
@@ -126,10 +133,6 @@ class ThagMainFrame(ThagMainFrameBase):
 
     def DoSave(self, event):
         self.save()
-
-
-
-
 
 
 class ThagMainDialog(ThagMainDialogBase):

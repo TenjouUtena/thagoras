@@ -304,6 +304,15 @@ class ThagWorldDialog(ThagWorldDialogBase):
         self.char_list.InsertColumn(1, "Password")
 
         self.clist = {}
+        self.deleteme = False
+
+    def OnDeleteWorld(self, event):
+        if(self.deleteme):
+            self.deleteme = False
+            self.delete_button.SetLabel("Delete World")
+        else:
+            self.deleteme = True
+            self.delete_button.SetLabel("Undelete World")
 
     def fillForm(self, world):
          ## Setup Dialog in here....
@@ -356,6 +365,9 @@ class ThagWorldDialog(ThagWorldDialogBase):
         self.char_name.SetValue("New")
         self.char_pass.SetValue("New")
 
+    def OnInit(self, event):
+        self.char_list.Select(0)
+
     def OnCharSave( self, event ):
         ii=self.char_list.GetNextSelected(-1)
         self.char_list.SetStringItem(ii,0, self.char_name.GetValue())
@@ -366,8 +378,19 @@ class ThagWorldDialog(ThagWorldDialogBase):
         c.password = self.char_pass.GetValue()
     
     def OnCharRemove( self, event ):
-        event.Skip()
-    
+        if(self.char_list.GetItemCount() == 1):
+            return
+
+        ii=self.char_list.GetNextSelected(-1)
+
+        cc = self.char_list.GetItemData(ii)
+        self.clist.pop(cc)
+
+        self.char_list.DeleteItem(ii)
+
+        self.char_list.Select(0)
+
+
 class ThagPersonInfo(ThagPersonInfoBase):
     def __init__(self, parent, information, selected = ""):
         self.parent = parent

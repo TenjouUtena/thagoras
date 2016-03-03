@@ -44,10 +44,12 @@ class TelnetFactory(ClientFactory):
         self.exit_command = cmd
 
     def clientConnectionLost(self, connector, reason):
+        ## NOTE: I don't think this code is every used.
         if(self.gui):
             self.gui.connectionFailed(reason)
 
     def clientConnectionFailed(self, connector, reason):
+        ## NOTE: I don't think this code is ever used.
         if(self.gui):
             self.gui.connectionFailed(reason)
 
@@ -122,7 +124,7 @@ class TelnetClient(StatefulTelnetProtocol):
 
     def connectionLost(self, reason):
         if not reason.check(error.ConnectionClosed):
-            logging.warning("Lost Connection: %s" % reason.value)
+            logger.warning("Lost Connection: %s" % reason.value)
             if(self.factory.gui):
                 self.factory.gui.connectionFailed(reason.value)
         else:
