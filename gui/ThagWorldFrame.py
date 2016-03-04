@@ -480,7 +480,10 @@ class ThagPersonInfoPane(ThagPersonInfoPaneBase):
                 #self.showPicture(mm.group(1))
 
     def SetPicture(self, pic):
-        self.person_picture.SetBitmap(pic)
+        try:
+            self.person_picture.SetBitmap(pic)
+        except:
+            pass
         self.m_scrolledWindow1.SendSizeEvent()
 
     def showPicture(self, surl):
