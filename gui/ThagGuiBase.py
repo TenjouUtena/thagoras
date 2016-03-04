@@ -239,14 +239,14 @@ class ThagWorldChannelFrameBase ( wx.Frame ):
 		
 		self.chan_notebook = wx.Notebook( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, 0 )
 		
-		bSizer1.Add( self.chan_notebook, 1, wx.EXPAND |wx.ALL, 5 )
+		bSizer1.Add( self.chan_notebook, 1, wx.EXPAND |wx.ALL, 0 )
 		
 		bSizer2 = wx.BoxSizer( wx.HORIZONTAL )
 		
 		char_choiceChoices = []
 		self.char_choice = wx.Choice( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, char_choiceChoices, 0 )
 		self.char_choice.SetSelection( 0 )
-		bSizer2.Add( self.char_choice, 0, wx.ALL, 5 )
+		bSizer2.Add( self.char_choice, 0, wx.ALL, 0 )
 		
 		self.output = wx.TextCtrl( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, wx.TE_PROCESS_ENTER )
 		self.output.SetMaxLength( 0 ) 
@@ -558,5 +558,42 @@ class ThagPersonInfoPaneBase ( wx.Panel ):
 	
 	def __del__( self ):
 		pass
+	
+
+###########################################################################
+## Class ThagOutputPanelBase
+###########################################################################
+
+class ThagOutputPanelBase ( wx.Panel ):
+	
+	def __init__( self, parent ):
+		wx.Panel.__init__ ( self, parent, id = wx.ID_ANY, pos = wx.DefaultPosition, size = wx.Size( 500,300 ), style = wx.TAB_TRAVERSAL )
+		
+		bSizer23 = wx.BoxSizer( wx.VERTICAL )
+		
+		self.text_output = wx.richtext.RichTextCtrl( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, wx.TE_READONLY|wx.VSCROLL|wx.HSCROLL|wx.NO_BORDER|wx.WANTS_CHARS )
+		self.text_output.SetForegroundColour( wx.Colour( 192, 192, 192 ) )
+		self.text_output.SetBackgroundColour( wx.Colour( 0, 0, 0 ) )
+		
+		bSizer23.Add( self.text_output, 1, wx.EXPAND |wx.ALL, 0 )
+		
+		
+		self.SetSizer( bSizer23 )
+		self.Layout()
+		
+		# Connect Events
+		self.text_output.Bind( wx.EVT_SET_FOCUS, self.OnOutFocus )
+		self.text_output.Bind( wx.EVT_TEXT_URL, self.OnURL )
+	
+	def __del__( self ):
+		pass
+	
+	
+	# Virtual event handlers, overide them in your derived class
+	def OnOutFocus( self, event ):
+		event.Skip()
+	
+	def OnURL( self, event ):
+		event.Skip()
 	
 

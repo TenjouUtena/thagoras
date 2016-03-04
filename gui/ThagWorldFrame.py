@@ -54,7 +54,7 @@ class ThagOutputWindow(object):
         self.trimclean = False
 
     def trimLength(self):
-        ltt = self.world.world.lines
+        ltt = self.world.lines
         lines = self.text_output.GetNumberOfLines()
         if(lines > ltt):
             diff = lines - ltt
@@ -193,7 +193,7 @@ class ThagOutputWindow(object):
             cmd = evt.GetString().split('|')[0]
             self.world.send(cmd)
         else:
-            webbrowser.open(evt.GetString(),2)
+            webbrowser.open(evt.GetString(), 2)
 
     def setColors(self):
         self.color = {}
@@ -238,9 +238,12 @@ class ThagOutputWindow(object):
 
     def writeTo(self, inp, dest=None):
         ## Simple, we can ignore dest
-        self.writeGUI(inp, self.text_output)
+        self.writeGUI(inp)
 
-    def writeGUI(self, inp, destCtrl):
+    def writeGUI(self, inp):
+
+        destCtrl = self.text_output
+
         destCtrl.SetInsertionPointEnd()
         bold = False
         for c in inp.commands:
@@ -295,9 +298,76 @@ class ThagOutputWindow(object):
         self.output.Clear()
 
 
+class ThagOutputPanel(ThagOutputWindow, ThagOutputPanelBase):
+    def __init__(self, *args, **kwds):
+        self.world = kwds['world']
+        kwds.pop('world')
+        ThagOutputPanelBase.__init__(self, *args, **kwds)
+        self.setColors()
+
+        # Set default Style
+        sty = wx.richtext.RichTextAttr()
+        sty.SetBackgroundColour(wx.Colour(0,0,0))
+        sty.SetFont(wx.Font(10, wx.FONTFAMILY_MODERN,wx.FONTSTYLE_NORMAL,wx.FONTWEIGHT_NORMAL))
+        sty.SetTextColour(self.color[7])
+        self.text_output.SetBasicStyle(sty)
+
+        self.contexts = {}
+        self.text_output.Bind(wx.richtext.EVT_RICHTEXT_RIGHT_CLICK, self.OnRightClick)
+
+        self.trimout = task.LoopingCall(self.setTrimLength)
+        self.trimout.start(30.0)
+        self.trimclean = True
+
+        self.parent = None
+
+    def OnOutFocus(self, evt):
+        self.parent.output.SetFocus()
+
+    def DoCommand(self, evt, command):
+        self.parent.character.send(command)
+
+
 class ThagChannelOutputWindow(ThagOutputWindow):
     def __init__(self, *args, **kwds):
-        ThagOutputWindow.__init__(self)
+        self.telnet = None
+        self.infowindow = None
+
+        self.commandHistory = []
+        self.isRecall = False
+
+        # ThagOutputWindow.__init__(self)
+        self.panels = {}
+
+        self.buildChars()
+
+    def createPanel(self, panelName):
+        newp = ThagOutputPanel(self.chan_notebook, world=self.world)
+        newp.parent = self
+        self.panels[panelName] = newp
+        self.chan_notebook.AddPage(newp, panelName)
+
+    def writeTo(self, inp, dest=None):
+        if inp.suboutput not in self.panels:
+            self.createPanel(inp.suboutput)
+        self.panels[inp.suboutput].writeGUI(inp)
+
+    def buildChars(self):
+        for ch in self.world.chars:
+            self.char_choice.Insert(ch.user, 0, ch)
+
+    @property
+    def character(self):
+        return self.char_choice.GetClientData(self.char_choice.GetSelection())
+
+    def OnSend(self, event):
+        tts = self.output.GetLineText(0)
+
+        self.pushInput(tts)
+
+        ## Let the world handle the text output.
+        self.character.send(tts)
+        self.output.Clear()
 
 
 class ThagChannelFrame(ThagChannelOutputWindow, ThagWorldChannelFrameBase):
@@ -306,6 +376,7 @@ class ThagChannelFrame(ThagChannelOutputWindow, ThagWorldChannelFrameBase):
         kwds.pop('world')
         ThagWorldChannelFrameBase.__init__(self, *args, **kwds)
         ThagChannelOutputWindow.__init__(self, *args, **kwds)
+
 
 class ThagWorldFrame(ThagOutputWindow, ThagWorldFrameBase):
     def __init__(self, *args, **kwds):
@@ -351,7 +422,6 @@ class ThagWorldDialog(ThagWorldDialogBase):
 
             cc = cc + 1
 
-
     def writeObj(self, world):
         world.name = self.world_name.GetValue()
         world.address = self.world_address.GetValue()
@@ -368,7 +438,6 @@ class ThagWorldDialog(ThagWorldDialogBase):
         cc = self.char_list.GetItemData(ii)
         self.char_name.SetValue(self.clist[cc].user)
         self.char_pass.SetValue(self.clist[cc].password)
-
 
     def OnCharAdd( self, event ):
         cc = self.char_list.GetItemCount()
@@ -409,7 +478,6 @@ class ThagWorldDialog(ThagWorldDialogBase):
 
         self.char_list.Select(0)
 
-
 class ThagPersonInfo(ThagPersonInfoBase):
     def __init__(self, parent, information, selected = ""):
         self.parent = parent
@@ -425,11 +493,9 @@ class ThagPersonInfo(ThagPersonInfoBase):
         if(n):
             self.person_selector.SetSelection(n)
 
-
     def OnClose(self, evt):
         self.parent.HideInfo()
         evt.Skip()
-
 
     def updateInfo(self, information):
         self.info = information

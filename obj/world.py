@@ -11,13 +11,21 @@ class ParseObject(object):
 ## TODO:  Clean up this dirty inheritance bullshit.
 
     def dispatch(self, inp):
+
+        # This probably isn't the best place for this code
+        # But literally nowhere makes any logical sense
         if(not self.outputs.has_key(inp.output)):
             if(not self.outputtypes.has_key(inp.output)):
                 raise NoSuchOutputException(inp.output)
-            self.outputs[inp.output] = self.outputtypes[inp.output](self)
+            self.outputs[inp.output] = self.outputtypes[inp.output](self.mainframe, world=self)
+            self.outputs[inp.output].SetTitle(self.name + ' - ' + inp.output)
             self.outputs[inp.output].Show()
 
         self.outputs[inp.output].writeTo(inp)
+
+    @property
+    def lines(self):
+        return self._lines
 
 class Character(ParseObject):
     def __init__(self, world, user="", password=""):
@@ -25,6 +33,11 @@ class Character(ParseObject):
         self.user = user
         self.password = password
         self.setupVars()
+        self.mainframe = None
+
+    @property
+    def lines(self):
+        return self.world._lines
 
     def setFrame(self, gui):
         self.gui = gui
@@ -57,6 +70,7 @@ class Character(ParseObject):
         self.mxp = 'mxp'
         self.notmxp = 'notmap'
         self.mxp = False
+        self.mainframe = None
 
     def setDefaultFilters(self):
         self.filters = {}
@@ -85,6 +99,12 @@ class Character(ParseObject):
         ff = mufilter.MUF_URL_Handler()
         self.filters['mxp'].append(ff)
 
+        ff = mufilter.MUF_Calculate_Text()
+        self.filters['mxp'].append(ff)
+
+        ff = mufilter.MUF_Pass_To_Sub(r'^<(.*?)>.*', 'channel', 'world')
+        self.filters['mxp'].append(ff)
+
         ## Set non-MXP Filters
         self.filters['notmxp'] = []
 
@@ -107,8 +127,7 @@ class Character(ParseObject):
 
     def recv(self, line):
         ## Run Filters
-        ilist = []
-        ilist.append(mufilter.Input(line))
+        ilist = [mufilter.Input(line)]
 
         if(self.mxp):
             fil = 'mxp'
@@ -134,12 +153,14 @@ class Character(ParseObject):
         odict.pop('gui')
         odict.pop('telnet')
         odict.pop('outputs')
+        odict.pop('mainframe')
         return odict
 
     def __setstate__(self, dd):
         self.setupVars()
         self.__dict__.update(dd)
         self.setDefaultFilters()
+
 
 class World(ParseObject):
     def __init__(self,name="",address="",port=0):
@@ -148,7 +169,7 @@ class World(ParseObject):
         self.name = name
         self.ssl = False
         self.setupVars()
-
+        self.mainframe = None
 
     def setupVars(self):
         self.chars = []
@@ -160,7 +181,7 @@ class World(ParseObject):
         self.filters = {}
         self.profiles = {}
         self.outputtypes = {}
-        self.lines = 500
+        self._lines = 500
         self.outputtypes['channel'] = gui.ThagChannelFrame
 
     def send(self, line):
@@ -176,6 +197,7 @@ class World(ParseObject):
         odict.pop('gui')
         odict.pop('telnet')
         odict.pop('outputs')
+        odict.pop('mainframe')
         return odict
 
     def __setstate__(self, dd):
@@ -183,5 +205,12 @@ class World(ParseObject):
         self.__dict__.update(dd)
         self.setCharWorld()
 
+    @property
+    def lines(self):
+        return self._lines
+
+    @lines.setter
+    def lines(self, ll):
+        self._lines = ll
 
         

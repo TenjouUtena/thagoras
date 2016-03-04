@@ -72,6 +72,10 @@ class ThagMainFrame(ThagMainFrameBase):
         ww.SetTitle(charr.world.name + ' - ' + charr.user)
         charr.setFrame(ww)
 
+        #This is dirty and hackish.
+        charr.mainframe = self
+        charr.world.mainframe = self
+
         tt = net.connect(charr.world.address, charr.world.port, ww, charr)
         tt.addErrback(ww.connectionFailed)
         ww.Show()

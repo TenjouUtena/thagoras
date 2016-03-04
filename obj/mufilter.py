@@ -88,7 +88,7 @@ class MUFilter(object):
     def run(self, inp):
         pass
 
-class MUS_Pass_To_Sub(MUFilter):
+class MUF_Pass_To_Sub(MUFilter):
     def __init__(self, pattern, dest, outputlevel):
         self.type = "Pass to Suboutput Window"
         
@@ -101,7 +101,7 @@ class MUS_Pass_To_Sub(MUFilter):
         self.sub = ""
 
     def run(self, inp):
-        mm = self.pattern.match(imp.resultanttext)
+        mm = self.pattern.match(inp.resultanttext)
         if(mm):
             inp.output = self.dest
             inp.suboutput = mm.group(1)
@@ -114,10 +114,10 @@ class MUF_Calculate_Text(MUFilter):
         self.type = "Calculate resultanttext field"
 
     def run(self, inp):
-        self.resultanttext = ""
+        inp.resultanttext = ""
         for c in inp.commands:
             if(c.type == "Text"):
-                self.resultanttext += c.text
+                inp.resultanttext += c.text
 
 class MUF_Add_Newline(MUFilter):
     def __init__(self):
