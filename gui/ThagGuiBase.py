@@ -161,7 +161,7 @@ class ThagWorldFrameBase ( wx.Frame ):
 		self.text_output.SetForegroundColour( wx.Colour( 192, 192, 192 ) )
 		self.text_output.SetBackgroundColour( wx.Colour( 0, 0, 0 ) )
 		
-		bSizer1.Add( self.text_output, 100, wx.EXPAND |wx.ALL, 1 )
+		bSizer1.Add( self.text_output, 1, wx.EXPAND |wx.ALL, 1 )
 		
 		bSizer2 = wx.BoxSizer( wx.HORIZONTAL )
 		
@@ -179,7 +179,7 @@ class ThagWorldFrameBase ( wx.Frame ):
 		bSizer2.Add( self.button_1, 1, 0, 0 )
 		
 		
-		bSizer1.Add( bSizer2, 1, wx.ALIGN_BOTTOM|wx.EXPAND|wx.FIXED_MINSIZE|wx.TOP, 0 )
+		bSizer1.Add( bSizer2, 0, wx.ALIGN_BOTTOM|wx.EXPAND|wx.FIXED_MINSIZE|wx.TOP, 0 )
 		
 		
 		self.SetSizer( bSizer1 )
@@ -212,6 +212,77 @@ class ThagWorldFrameBase ( wx.Frame ):
 		event.Skip()
 	
 	def OnURL( self, event ):
+		event.Skip()
+	
+	def OnKeyDown( self, event ):
+		event.Skip()
+	
+	def OnSend( self, event ):
+		event.Skip()
+	
+
+###########################################################################
+## Class ThagWorldChannelFrameBase
+###########################################################################
+
+class ThagWorldChannelFrameBase ( wx.Frame ):
+	
+	def __init__( self, parent ):
+		wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = wx.EmptyString, pos = wx.DefaultPosition, size = wx.Size( 977,549 ), style = wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL )
+		
+		self.SetSizeHintsSz( wx.DefaultSize, wx.DefaultSize )
+		
+		self.thag_world_frame_menubar = wx.MenuBar( 0 )
+		self.SetMenuBar( self.thag_world_frame_menubar )
+		
+		bSizer1 = wx.BoxSizer( wx.VERTICAL )
+		
+		self.chan_notebook = wx.Notebook( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, 0 )
+		
+		bSizer1.Add( self.chan_notebook, 1, wx.EXPAND |wx.ALL, 5 )
+		
+		bSizer2 = wx.BoxSizer( wx.HORIZONTAL )
+		
+		char_choiceChoices = []
+		self.char_choice = wx.Choice( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, char_choiceChoices, 0 )
+		self.char_choice.SetSelection( 0 )
+		bSizer2.Add( self.char_choice, 0, wx.ALL, 5 )
+		
+		self.output = wx.TextCtrl( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, wx.TE_PROCESS_ENTER )
+		self.output.SetMaxLength( 0 ) 
+		self.output.SetForegroundColour( wx.Colour( 192, 192, 192 ) )
+		self.output.SetBackgroundColour( wx.Colour( 0, 0, 0 ) )
+		self.output.SetMinSize( wx.Size( -1,20 ) )
+		self.output.SetMaxSize( wx.Size( -1,27 ) )
+		
+		bSizer2.Add( self.output, 8, wx.EXPAND, 0 )
+		
+		self.button_1 = wx.Button( self, wx.ID_ANY, u"Send", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.button_1.SetDefault() 
+		bSizer2.Add( self.button_1, 1, 0, 0 )
+		
+		
+		bSizer1.Add( bSizer2, 0, wx.ALIGN_BOTTOM|wx.EXPAND|wx.FIXED_MINSIZE|wx.TOP, 0 )
+		
+		
+		self.SetSizer( bSizer1 )
+		self.Layout()
+		
+		# Connect Events
+		self.Bind( wx.EVT_CLOSE, self.OnClose )
+		self.Bind( wx.EVT_MOUSEWHEEL, self.OnScroll )
+		self.output.Bind( wx.EVT_KEY_DOWN, self.OnKeyDown )
+		self.output.Bind( wx.EVT_TEXT_ENTER, self.OnSend )
+	
+	def __del__( self ):
+		pass
+	
+	
+	# Virtual event handlers, overide them in your derived class
+	def OnClose( self, event ):
+		event.Skip()
+	
+	def OnScroll( self, event ):
 		event.Skip()
 	
 	def OnKeyDown( self, event ):

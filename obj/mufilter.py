@@ -5,7 +5,7 @@ from copy import deepcopy
 import re
 import util.url as url
 
-class Command():
+class Command(object):
     def __init__(self):
         self.type = "Generic"
         self.text = ""
@@ -69,22 +69,57 @@ class URLEndCommand(Command):
 
 
 
-class Input():
-    def __init__(self, text):
+class Input(object):
+    def __init__(self, text, output="main", outputlevel='char'):
         self.rawtext = text
+        self.resultanttext = text
         self.commands = []
+        self.output = output
+        self.suboutput = None
+        self.outputlevel = outputlevel
         com = TextCommand(text)
         self.commands.append(com)
 
 
-class MUFilter():
+class MUFilter(object):
     def __init__(self):
         self.type = "Generic"
 
     def run(self, inp):
         pass
 
-class MUF_Add_Newline():
+class MUS_Pass_To_Sub(MUFilter):
+    def __init__(self, pattern, dest, outputlevel):
+        self.type = "Pass to Suboutput Window"
+        
+        ## If text matches pattern, output will be redirected to the 
+        ## output described in dest/outputlevel
+        ## Input.suboutput will match the first group in the regex
+        self.pattern = re.compile(pattern)
+        self.dest = dest
+        self.outputlevel = outputlevel
+        self.sub = ""
+
+    def run(self, inp):
+        mm = self.pattern.match(imp.resultanttext)
+        if(mm):
+            inp.output = self.dest
+            inp.suboutput = mm.group(1)
+            inp.outputlevel = self.outputlevel
+
+
+
+class MUF_Calculate_Text(MUFilter):
+    def __init__(self):
+        self.type = "Calculate resultanttext field"
+
+    def run(self, inp):
+        self.resultanttext = ""
+        for c in inp.commands:
+            if(c.type == "Text"):
+                self.resultanttext += c.text
+
+class MUF_Add_Newline(MUFilter):
     def __init__(self):
         self.type = "Add a newline"
 
@@ -93,7 +128,7 @@ class MUF_Add_Newline():
         inp.commands.append(nl)
 
 ## Repair tags that dont' conform to XML spec
-class MUF_Tag_Fixer():
+class MUF_Tag_Fixer(MUFilter):
     def __init__(self):
         self.type = "Tag Fixer"
         self.ur = re.compile(r'<([a-zA-Z]+)\s+(\".*?\")(.*?)>')

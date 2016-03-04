@@ -2,12 +2,33 @@
 import mufilter
 import re, json
 
-class Character():
+import gui
+
+class NoSuchOutputException(Exception):
+    pass
+
+class ParseObject(object):
+## TODO:  Clean up this dirty inheritance bullshit.
+
+    def dispatch(self, inp):
+        if(not self.outputs.has_key(inp.output)):
+            if(not self.outputtypes.has_key(inp.output)):
+                raise NoSuchOutputException(inp.output)
+            self.outputs[inp.output] = self.outputtypes[inp.output](self)
+            self.outputs[inp.output].Show()
+
+        self.outputs[inp.output].writeTo(inp)
+
+class Character(ParseObject):
     def __init__(self, world, user="", password=""):
         self.world = world
         self.user = user
         self.password = password
         self.setupVars()
+
+    def setFrame(self, gui):
+        self.gui = gui
+        self.outputs['main'] = gui
 
     def oob(self, info):
         res = self.oobre.match(info)
@@ -22,7 +43,7 @@ class Character():
                 self.world.profiles[comlist[1]][comlist[2]] = json.loads(res.group(3))
 
     def getWidth(self):
-        return self.gui.getWidth()
+        return self.outputs['main'].getWidth()
 
     def setupVars(self):
         self.gui = None
@@ -30,6 +51,7 @@ class Character():
         self.outputs = {}
         self.inputs = {}
         self.filters = {}
+        self.outputtypes = {}
         self.setDefaultFilters()
         self.oobre = re.compile(r'(([0-9a-zA-Z_\'\"\- ]+\.)*[0-9a-zA-Z_\'\"\-]+) ({.*?})')
         self.mxp = 'mxp'
@@ -85,21 +107,33 @@ class Character():
 
     def recv(self, line):
         ## Run Filters
-        ii = mufilter.Input(line)
+        ilist = []
+        ilist.append(mufilter.Input(line))
+
         if(self.mxp):
             fil = 'mxp'
         else:
             fil = 'notmxp'
-        for f in self.filters[fil]:
-            f.run(ii)
 
-        self.gui.writeGUI(ii)
+
+        ibase = ilist[0]
+        for f in self.filters[fil]:
+            f.run(ibase)
+
+        for ii in ilist:
+            if(ii.outputlevel == 'char'):
+                self.dispatch(ii)
+            if(ii.outputlevel == 'world'):
+                self.world.dispatch(ii)
+
+
 
     def __getstate__(self):
         odict = self.__dict__.copy()
         odict.pop('world')
         odict.pop('gui')
         odict.pop('telnet')
+        odict.pop('outputs')
         return odict
 
     def __setstate__(self, dd):
@@ -107,7 +141,7 @@ class Character():
         self.__dict__.update(dd)
         self.setDefaultFilters()
 
-class World():
+class World(ParseObject):
     def __init__(self,name="",address="",port=0):
         self.address = address
         self.port = port
@@ -125,7 +159,9 @@ class World():
         self.inputs = {}
         self.filters = {}
         self.profiles = {}
+        self.outputtypes = {}
         self.lines = 500
+        self.outputtypes['channel'] = gui.ThagChannelFrame
 
     def send(self, line):
         self.telnet.write(str(line))
@@ -139,6 +175,7 @@ class World():
         odict = self.__dict__.copy()
         odict.pop('gui')
         odict.pop('telnet')
+        odict.pop('outputs')
         return odict
 
     def __setstate__(self, dd):

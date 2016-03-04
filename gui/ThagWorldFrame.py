@@ -13,7 +13,7 @@ from util.url import urlre, urlImageGetter
 import logging
 logger = logging.getLogger(__name__)
 
-class ThagOutputWindow():
+class ThagOutputWindow(object):
 
     def __init__(self, *args, **kwds):
         self.telnet = None
@@ -25,6 +25,8 @@ class ThagOutputWindow():
         sty.SetFont(wx.Font(10, wx.FONTFAMILY_MODERN,wx.FONTSTYLE_NORMAL,wx.FONTWEIGHT_NORMAL))
         sty.SetTextColour(self.color[7])
         self.text_output.SetBasicStyle(sty)
+
+        
         self.commandHistory = []
         self.isRecall = False
 
@@ -234,50 +236,54 @@ class ThagOutputWindow():
         #self.text_output.AppendText("\n")
         #self.text_output.ShowPosition(self.text_output.LastPosition)
 
-    def writeGUI(self, inp):
-        self.text_output.SetInsertionPointEnd()
+    def writeTo(self, inp, dest=None):
+        ## Simple, we can ignore dest
+        self.writeGUI(inp, self.text_output)
+
+    def writeGUI(self, inp, destCtrl):
+        destCtrl.SetInsertionPointEnd()
         bold = False
         for c in inp.commands:
             ## Interprets Commands Here
             if(c.type == "Text"):
                 if(c.text != ""):
-                    self.text_output.WriteText(c.text)
+                    destCtrl.WriteText(c.text)
             if(c.type == "Newline"):
-                self.text_output.EndBold()
-                self.text_output.EndTextColour()
+                destCtrl.EndBold()
+                destCtrl.EndTextColour()
                 bold = False
-                self.text_output.WriteText("\n")
+                destCtrl.WriteText("\n")
             if(c.type == "Font"):
                 if(c.sub == "Normal"):
-                    self.text_output.EndBold()
-                    self.text_output.EndTextColour()
+                    destCtrl.EndBold()
+                    destCtrl.EndTextColour()
                     bold = False
                 if(c.sub == "Bold"):
-                    self.text_output.BeginBold()
-                    self.text_output.BeginTextColour(self.color[15]);
+                    destCtrl.BeginBold()
+                    destCtrl.BeginTextColour(self.color[15]);
                     bold = True
                 if(c.sub == "SimpleColor"):
                     d = c.color
                     if(bold and d < 8):
                         d += 8  
-                    self.text_output.EndTextColour()
-                    self.text_output.BeginTextColour(self.color[d])
+                    destCtrl.EndTextColour()
+                    destCtrl.BeginTextColour(self.color[d])
             if(c.type == "Context"):
                 if(c.tag.tagsettings.has_key('href')):
                     self.contexts[c.tag.tagsettings['href']] = c.tag
-                    self.text_output.BeginURL(c.tag.tagsettings['href'])
+                    destCtrl.BeginURL(c.tag.tagsettings['href'])
 
             if(c.type == "EndContext"):
-                self.text_output.EndURL()
+                destCtrl.EndURL()
             if(c.type == "URL"):
-                self.text_output.BeginURL(c.url)
+                destCtrl.BeginURL(c.url)
             if(c.type == "EndURL"):
-                self.text_output.EndURL()
+                destCtrl.EndURL()
 
         if(not self.trimclean):
             self.trimLength()
-        self.text_output.SetInsertionPointEnd()
-        self.text_output.ShowPosition(self.text_output.LastPosition)
+        destCtrl.SetInsertionPointEnd()
+        destCtrl.ShowPosition(destCtrl.LastPosition)
 
     def OnSend(self, event):
         tts = self.output.GetLineText(0)
@@ -287,6 +293,19 @@ class ThagOutputWindow():
         ## Let the world handle the text output.
         self.world.send(tts)
         self.output.Clear()
+
+
+class ThagChannelOutputWindow(ThagOutputWindow):
+    def __init__(self, *args, **kwds):
+        ThagOutputWindow.__init__(self)
+
+
+class ThagChannelFrame(ThagChannelOutputWindow, ThagWorldChannelFrameBase):
+    def __init__(self, *args, **kwds):
+        self.world = kwds['world']
+        kwds.pop('world')
+        ThagWorldChannelFrameBase.__init__(self, *args, **kwds)
+        ThagChannelOutputWindow.__init__(self, *args, **kwds)
 
 class ThagWorldFrame(ThagOutputWindow, ThagWorldFrameBase):
     def __init__(self, *args, **kwds):

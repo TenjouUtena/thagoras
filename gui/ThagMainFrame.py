@@ -70,7 +70,7 @@ class ThagMainFrame(ThagMainFrameBase):
         ## Create window
         ww = ThagWorldFrame(self, world=charr)
         ww.SetTitle(charr.world.name + ' - ' + charr.user)
-        charr.gui = ww
+        charr.setFrame(ww)
 
         tt = net.connect(charr.world.address, charr.world.port, ww, charr)
         tt.addErrback(ww.connectionFailed)
