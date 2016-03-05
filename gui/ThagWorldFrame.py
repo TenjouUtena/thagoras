@@ -96,7 +96,7 @@ class ThagOutputWindow(object):
         self.commandHistory = self.commandHistory[:15]
         self.isRecall = False
 
-    def OnClose( self, event ):
+    def OnClose( self, event):
         ## Close the Telet Connection
         if(self.telnet):
             self.telnet.close()
@@ -191,7 +191,7 @@ class ThagOutputWindow(object):
         if(self.contexts.has_key(evt.GetString())):
             #Send the default href command
             cmd = evt.GetString().split('|')[0]
-            self.world.send(cmd)
+            self.DoCommand(evt, cmd)
         else:
             webbrowser.open(evt.GetString(), 2)
 
@@ -341,6 +341,15 @@ class ThagChannelOutputWindow(ThagOutputWindow):
 
         self.buildChars()
 
+        ## Setup Images
+        self.image_list = wx.ImageList(16, 16)
+        self.greennum = self.image_list.Add(wx.Image("img/green.png", wx.BITMAP_TYPE_PNG).ConvertToBitmap())
+
+        self.chan_notebook.SetImageList(self.image_list)
+
+    def OnScroll(self, evt):
+        self.chan_notebook.GetCurrentPage().ScrollLines(evt.GetWheelRotation()*-0.1)
+
     def createPanel(self, panelName):
         newp = ThagOutputPanel(self.chan_notebook, world=self.world)
         newp.parent = self
@@ -351,6 +360,15 @@ class ThagChannelOutputWindow(ThagOutputWindow):
         if inp.suboutput not in self.panels:
             self.createPanel(inp.suboutput)
         self.panels[inp.suboutput].writeGUI(inp)
+
+        if self.panels[inp.suboutput] != self.chan_notebook.GetCurrentPage():
+            # This is the most ridiculous thing omg.
+            for x in range(self.chan_notebook.GetPageCount()):
+                if self.chan_notebook.GetPage(x) == self.panels[inp.suboutput]:
+                    self.chan_notebook.SetPageImage(x, self.greennum)
+
+    def OnChange(self, event):
+        self.chan_notebook.SetPageImage(event.GetSelection(), wx.BookCtrlBase.NO_IMAGE)
 
     def buildChars(self):
         for ch in self.world.chars:

@@ -269,8 +269,8 @@ class ThagWorldChannelFrameBase ( wx.Frame ):
 		self.Layout()
 		
 		# Connect Events
-		self.Bind( wx.EVT_CLOSE, self.OnClose )
 		self.Bind( wx.EVT_MOUSEWHEEL, self.OnScroll )
+		self.chan_notebook.Bind( wx.EVT_NOTEBOOK_PAGE_CHANGED, self.OnChange )
 		self.output.Bind( wx.EVT_KEY_DOWN, self.OnKeyDown )
 		self.output.Bind( wx.EVT_TEXT_ENTER, self.OnSend )
 	
@@ -279,10 +279,10 @@ class ThagWorldChannelFrameBase ( wx.Frame ):
 	
 	
 	# Virtual event handlers, overide them in your derived class
-	def OnClose( self, event ):
+	def OnScroll( self, event ):
 		event.Skip()
 	
-	def OnScroll( self, event ):
+	def OnChange( self, event ):
 		event.Skip()
 	
 	def OnKeyDown( self, event ):
