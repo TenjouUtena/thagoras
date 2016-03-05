@@ -571,7 +571,7 @@ class ThagOutputPanelBase ( wx.Panel ):
 		
 		bSizer23 = wx.BoxSizer( wx.VERTICAL )
 		
-		self.text_output = wx.richtext.RichTextCtrl( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, wx.TE_READONLY|wx.VSCROLL|wx.HSCROLL|wx.NO_BORDER|wx.WANTS_CHARS )
+		self.text_output = wx.richtext.RichTextCtrl( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, wx.TE_READONLY|wx.HSCROLL|wx.NO_BORDER|wx.VSCROLL )
 		self.text_output.SetForegroundColour( wx.Colour( 192, 192, 192 ) )
 		self.text_output.SetBackgroundColour( wx.Colour( 0, 0, 0 ) )
 		

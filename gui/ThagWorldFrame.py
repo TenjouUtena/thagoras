@@ -348,7 +348,7 @@ class ThagChannelOutputWindow(ThagOutputWindow):
         self.chan_notebook.SetImageList(self.image_list)
 
     def OnScroll(self, evt):
-        self.chan_notebook.GetCurrentPage().ScrollLines(evt.GetWheelRotation()*-0.1)
+        self.chan_notebook.GetCurrentPage().text_output.ScrollLines(evt.GetWheelRotation()*-0.1)
 
     def createPanel(self, panelName):
         newp = ThagOutputPanel(self.chan_notebook, world=self.world)
@@ -372,7 +372,8 @@ class ThagChannelOutputWindow(ThagOutputWindow):
 
     def buildChars(self):
         for ch in self.world.chars:
-            self.char_choice.Insert(ch.user, 0, ch)
+            if(ch.telnet):
+                self.char_choice.Insert(ch.user, 0, ch)
 
     @property
     def character(self):
