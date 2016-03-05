@@ -127,7 +127,8 @@ class TelnetClient(StatefulTelnetProtocol):
         else:
             if (self.factory.gui):
                 self.factory.gui.connectionFailed("Closed")
-        self.factory.world.telnet = None
+
+        self.factory.world.disconnected()
 
     def connectionMade(self):
         ## Twisted is put together weird
@@ -142,8 +143,9 @@ class TelnetClient(StatefulTelnetProtocol):
         self.setLineMode()
         gui = self.factory.gui
         world = self.factory.world
-        world.telnet = self
-        world.mxp = False
+        world.connected(self)
+
+        # TODO: Make this unneeded
         if (gui):
             gui.telnet = self
 

@@ -8,7 +8,9 @@ class NoSuchOutputException(Exception):
     pass
 
 class ParseObject(object):
-## TODO:  Clean up this dirty inheritance bullshit.
+    # TODO:  Clean up this dirty inheritance bullshit.
+    def __init__(self):
+        self.telnet = None
 
     def dispatch(self, inp):
 
@@ -23,17 +25,32 @@ class ParseObject(object):
 
         self.outputs[inp.output].writeTo(inp)
 
+    def connected(self, telobj):
+        self.telnet = telobj
+
+    def disconnected(self):
+        self.telnet = None
+
     @property
     def lines(self):
         return self._lines
 
 class Character(ParseObject):
     def __init__(self, world, user="", password=""):
+        ParseObject.__init__(self)
         self.world = world
         self.user = user
         self.password = password
         self.setupVars()
         self.mainframe = None
+
+    def connected(self, telobj):
+        ParseObject.connected(self, telobj)
+        self.world.connected(telobj)
+
+    def disconnected(self):
+        ParseObject.disconnected(self)
+        self.world.disconnected()
 
     @property
     def lines(self):
@@ -59,6 +76,7 @@ class Character(ParseObject):
         return self.outputs['main'].getWidth()
 
     def setupVars(self):
+        # TODO: Fix this
         self.gui = None
         self.telnet = None
         self.outputs = {}
@@ -164,12 +182,21 @@ class Character(ParseObject):
 
 class World(ParseObject):
     def __init__(self,name="",address="",port=0):
+        ParseObject.__init__(self)
         self.address = address
         self.port = port
         self.name = name
         self.ssl = False
         self.setupVars()
         self.mainframe = None
+
+    def connected(self, telobj):
+        if 'channel' in self.outputs:
+            self.outputs['channel'].buildChars()
+
+    def disconnected(self):
+        if 'channel' in self.outputs:
+            self.outputs['channel'].buildChars()
 
     def setupVars(self):
         self.chars = []

@@ -371,9 +371,11 @@ class ThagChannelOutputWindow(ThagOutputWindow):
         self.chan_notebook.SetPageImage(event.GetSelection(), wx.BookCtrlBase.NO_IMAGE)
 
     def buildChars(self):
+        self.char_choice.Clear()
         for ch in self.world.chars:
             if(ch.telnet):
                 self.char_choice.Insert(ch.user, 0, ch)
+        self.char_choice.SetSelection(0)
 
     @property
     def character(self):
