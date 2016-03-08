@@ -338,6 +338,7 @@ class ThagChannelOutputWindow(ThagOutputWindow):
 
         # ThagOutputWindow.__init__(self)
         self.panels = {}
+        self.last_inputs = dict()
 
         self.buildChars()
 
@@ -357,6 +358,22 @@ class ThagChannelOutputWindow(ThagOutputWindow):
         self.chan_notebook.AddPage(newp, panelName)
 
     def writeTo(self, inp, dest=None):
+        ## Dedup inputs
+        destpanel = inp.suboutput
+        if not destpanel in self.last_inputs:
+            self.last_inputs[destpanel] = list()
+
+        # If we've already seen it, return.
+        # use list str comp for now.  If too slow,
+        # switch to city hash or something
+        if inp.resultanttext in self.last_inputs[destpanel]:
+            return
+
+        self.last_inputs[destpanel].append(inp.resultanttext)
+
+        # Only remember the last 10 or so.
+        self.last_inputs[destpanel] = self.last_inputs[destpanel][-10:]
+
         if inp.suboutput not in self.panels:
             self.createPanel(inp.suboutput)
         self.panels[inp.suboutput].writeGUI(inp)

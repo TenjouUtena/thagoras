@@ -196,7 +196,8 @@ class World(ParseObject):
 
     def disconnected(self):
         if 'channel' in self.outputs:
-            self.outputs['channel'].buildChars()
+            if self.outputs['channel']:
+                self.outputs['channel'].buildChars()
 
     def setupVars(self):
         self.chars = []
