@@ -21,12 +21,12 @@ class ThagMainFrame(ThagMainFrameBase):
         self.Close()
 
     def OnClose(self, event):
-        if(self.prefs.get('saveonclose')):
+        if self.prefs.get('saveonclose'):
             self.save()
         event.Skip()
 
     def makeWorldMenus(self):
-        if(self.worlds):
+        if self.worlds:
             for ww in self.worlds:
                 wsubmenu1 = wx.MenuItem(self.connect_menu, wx.ID_ANY, ww.name, "", wx.ITEM_NORMAL)
                 wsubmenuM = wx.Menu()
@@ -141,7 +141,7 @@ class ThagMainFrame(ThagMainFrameBase):
 
 class ThagMainDialog(ThagMainDialogBase):
     def fillForm(self, prefs):
-        if(prefs.get('saveonclose')):
+        if prefs.get('saveonclose') :
             self.save_on_close.SetValue(True);
 
 

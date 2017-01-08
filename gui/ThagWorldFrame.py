@@ -56,7 +56,7 @@ class ThagOutputWindow(object):
     def trimLength(self):
         ltt = self.world.lines
         lines = self.text_output.GetNumberOfLines()
-        if(lines > ltt):
+        if lines > ltt:
             diff = lines - ltt
             finalpos = self.text_output.XYToPosition(0,diff)
             self.text_output.Delete((0,finalpos))
@@ -67,24 +67,24 @@ class ThagOutputWindow(object):
         key = event.GetKeyCode()
 
         ## Check for command recall
-        if(key == wx.WXK_UP or key == wx.WXK_DOWN):
-            if(key == wx.WXK_UP):
-                if(not self.isRecall):
+        if (key == wx.WXK_UP or key == wx.WXK_DOWN):
+            if key == wx.WXK_UP:
+                if not self.isRecall :
                     self.isRecall = True
                     self.commandHistoryIndex = 0
                 else:
-                    if(self.commandHistoryIndex < (len(self.commandHistory)-1)):
+                    if self.commandHistoryIndex < (len(self.commandHistory)-1):
                         self.commandHistoryIndex += 1
 
-            if(key == wx.WXK_DOWN):
-                if(self.isRecall):
-                    if(self.commandHistoryIndex == 0):
+            if key == wx.WXK_DOWN:
+                if self.isRecall:
+                    if self.commandHistoryIndex == 0:
                         self.isRecall = False
                         self.output.Clear()
                     else:
                         self.commandHistoryIndex -= 1
 
-            if(self.commandHistoryIndex < len(self.commandHistory) and self.isRecall):
+            if self.commandHistoryIndex < len(self.commandHistory) and self.isRecall:
                 self.output.Clear()
                 self.output.AppendText(self.commandHistory[self.commandHistoryIndex])
 
@@ -98,7 +98,7 @@ class ThagOutputWindow(object):
 
     def OnClose( self, event):
         ## Close the Telet Connection
-        if(self.telnet):
+        if self.telnet:
             self.telnet.close()
 
         ## Stop Trimming the output
@@ -111,7 +111,7 @@ class ThagOutputWindow(object):
         self.text_output.ScrollLines(evt.GetWheelRotation()*-0.1)
 
     def OnSize(self, evt):
-        if(self.telnet):
+        if self.telnet:
             self.telnet.sendWindowSize()
         evt.Skip()
 
@@ -132,9 +132,9 @@ class ThagOutputWindow(object):
     def OnRightClick(self, evt):
         sty = wx.richtext.RichTextAttr()
         self.text_output.GetStyle(evt.GetPosition(),style=sty)
-        if(sty.HasURL()):
+        if sty.HasURL():
             sstr = sty.GetURL()
-            if(self.contexts.has_key(sstr)):
+            if self.contexts.has_key(sstr):
                 ## create Popup Menu
                 popup = wx.Menu()
                 ele = 0
@@ -143,21 +143,21 @@ class ThagOutputWindow(object):
                 for xx in sstr.split('|'):
                     ## This is kind of a hackish way to do this, but assume it's a character if
                     ## We see a finger prompt
-                    if(xx.split(' ')[0].lower() == '+finger'):
+                    if xx.split(' ')[0].lower() == '+finger':
                         wantInfoWindow = True
                         character = ' '.join(xx.split(' ')[1:])
 
                     wxid = wx.NewId()
 
                     ## use the command if no hint field is given
-                    if(not self.contexts[sstr].tagsettings.has_key('hint')):
+                    if not self.contexts[sstr].tagsettings.has_key('hint'):
                         label = xx
                     else:
                         label = self.contexts[sstr].tagsettings['hint'].split('|')[ele+1]
                     aa = popup.Append(wxid, label)
                     popup.Bind(wx.EVT_MENU, lambda evt, command=xx:self.DoCommand(evt, command),aa)
                     ele += 1
-                if(wantInfoWindow):
+                if wantInfoWindow:
                     ## Add a line to the menu to call the character info popout
 
                     popup.AppendSeparator()
@@ -170,7 +170,7 @@ class ThagOutputWindow(object):
                 popup.Destroy()
 
     def ShowInfo(self, evt, player):
-        if(not self.infowindow):
+        if not self.infowindow:
             newWindow = ThagPersonInfo(self, self.world.world.profiles, player)
             self.infowindow = newWindow
             newWindow.Show()
@@ -188,7 +188,7 @@ class ThagOutputWindow(object):
 
     def OnURL(self, evt):
         ## If I have a cached command, do that, otherise it's probably a URL
-        if(self.contexts.has_key(evt.GetString())):
+        if self.contexts.has_key(evt.GetString()):
             #Send the default href command
             cmd = evt.GetString().split('|')[0]
             self.DoCommand(evt, cmd)
@@ -232,9 +232,6 @@ class ThagOutputWindow(object):
 
     def writeLine(self, line):
         pass
-        #self.text_output.AppendText(line)
-        #self.text_output.AppendText("\n")
-        #self.text_output.ShowPosition(self.text_output.LastPosition)
 
     def writeTo(self, inp, dest=None):
         ## Simple, we can ignore dest
@@ -248,42 +245,42 @@ class ThagOutputWindow(object):
         bold = False
         for c in inp.commands:
             ## Interprets Commands Here
-            if(c.type == "Text"):
-                if(c.text != ""):
+            if c.type == "Text":
+                if c.text != "":
                     destCtrl.WriteText(c.text)
-            if(c.type == "Newline"):
+            if c.type == "Newline":
                 destCtrl.EndBold()
                 destCtrl.EndTextColour()
                 bold = False
                 destCtrl.WriteText("\n")
-            if(c.type == "Font"):
-                if(c.sub == "Normal"):
+            if c.type == "Font":
+                if c.sub == "Normal":
                     destCtrl.EndBold()
                     destCtrl.EndTextColour()
                     bold = False
-                if(c.sub == "Bold"):
+                if c.sub == "Bold":
                     destCtrl.BeginBold()
                     destCtrl.BeginTextColour(self.color[15]);
                     bold = True
-                if(c.sub == "SimpleColor"):
+                if c.sub == "SimpleColor":
                     d = c.color
-                    if(bold and d < 8):
+                    if bold and d < 8:
                         d += 8  
                     destCtrl.EndTextColour()
                     destCtrl.BeginTextColour(self.color[d])
-            if(c.type == "Context"):
-                if(c.tag.tagsettings.has_key('href')):
+            if c.type == "Context":
+                if c.tag.tagsettings.has_key('href'):
                     self.contexts[c.tag.tagsettings['href']] = c.tag
                     destCtrl.BeginURL(c.tag.tagsettings['href'])
 
-            if(c.type == "EndContext"):
+            if c.type == "EndContext":
                 destCtrl.EndURL()
-            if(c.type == "URL"):
+            if c.type == "URL":
                 destCtrl.BeginURL(c.url)
-            if(c.type == "EndURL"):
+            if c.type == "EndURL":
                 destCtrl.EndURL()
 
-        if(not self.trimclean):
+        if not self.trimclean:
             self.trimLength()
         destCtrl.SetInsertionPointEnd()
         destCtrl.ShowPosition(destCtrl.LastPosition)
@@ -390,7 +387,7 @@ class ThagChannelOutputWindow(ThagOutputWindow):
     def buildChars(self):
         self.char_choice.Clear()
         for ch in self.world.chars:
-            if(ch.telnet):
+            if ch.telnet:
                 self.char_choice.Insert(ch.user, 0, ch)
         self.char_choice.SetSelection(0)
 
@@ -435,7 +432,7 @@ class ThagWorldDialog(ThagWorldDialogBase):
         self.deleteme = False
 
     def OnDeleteWorld(self, event):
-        if(self.deleteme):
+        if self.deleteme:
             self.deleteme = False
             self.delete_button.SetLabel("Delete World")
         else:
@@ -504,7 +501,7 @@ class ThagWorldDialog(ThagWorldDialogBase):
         c.password = self.char_pass.GetValue()
     
     def OnCharRemove( self, event ):
-        if(self.char_list.GetItemCount() == 1):
+        if self.char_list.GetItemCount() == 1:
             return
 
         ii=self.char_list.GetNextSelected(-1)
