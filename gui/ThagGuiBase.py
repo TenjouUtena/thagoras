@@ -271,8 +271,10 @@ class ThagWorldChannelFrameBase ( wx.Frame ):
 		# Connect Events
 		self.Bind( wx.EVT_MOUSEWHEEL, self.OnScroll )
 		self.chan_notebook.Bind( wx.EVT_NOTEBOOK_PAGE_CHANGED, self.OnChange )
+		self.chan_notebook.Bind( wx.EVT_RIGHT_DOWN, self.OnRight )
 		self.output.Bind( wx.EVT_KEY_DOWN, self.OnKeyDown )
 		self.output.Bind( wx.EVT_TEXT_ENTER, self.OnSend )
+		self.button_1.Bind( wx.EVT_BUTTON, self.OnSend )
 	
 	def __del__( self ):
 		pass
@@ -285,11 +287,15 @@ class ThagWorldChannelFrameBase ( wx.Frame ):
 	def OnChange( self, event ):
 		event.Skip()
 	
+	def OnRight( self, event ):
+		event.Skip()
+	
 	def OnKeyDown( self, event ):
 		event.Skip()
 	
 	def OnSend( self, event ):
 		event.Skip()
+	
 	
 
 ###########################################################################

@@ -126,12 +126,12 @@ class ThagMainFrame(ThagMainFrameBase):
         try:
             data = settings.Load()
         except IOError:
-            if(not safe):
+            if not safe:
                 wx.MessageBox("I couldn't find the file to load, or another error occured","File Error")
         else:
-            if(data):
+            if data:
                 self.worlds = data[0]
-            if(len(data) >= 2):
+            if len(data) >= 2:
                 self.prefs = data[1]
             self.makeWorldMenus()
 

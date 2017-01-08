@@ -345,6 +345,21 @@ class ThagChannelOutputWindow(ThagOutputWindow):
 
         self.chan_notebook.SetImageList(self.image_list)
 
+
+    def OnRight(self, evt):
+        tab, _ = self.chan_notebook.HitTest(evt.GetPosition())
+        whatTab = self.chan_notebook.GetPageText(tab)
+        mnu = wx.Menu()
+        cwdix = wx.NewId()
+        citem = mnu.Append(cwdix, "Close")
+        mnu.Bind(wx.EVT_MENU, lambda ee: self.TabClose(ee, whatTab, tab), citem)
+        self.chan_notebook.PopupMenu(mnu, self.chan_notebook.ScreenToClient(wx.GetMousePosition()))
+        mnu.Destroy()
+
+    def TabClose(self, evt, tab, tabn):
+        del self.panels[tab]
+        self.chan_notebook.DeletePage(tabn)
+
     def OnScroll(self, evt):
         self.chan_notebook.GetCurrentPage().text_output.ScrollLines(evt.GetWheelRotation()*-0.1)
 
