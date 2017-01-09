@@ -135,7 +135,7 @@ class MUF_Tag_Fixer(MUFilter):
 
     def run(self, inp):
         for c in inp.commands:
-            if(c.type == "Text"):
+            if c.type == "Text":
                 newt = ""
                 c.text = self.ur.sub(r"<\1 href=\2 \3>",c.text)
 
@@ -148,17 +148,17 @@ class MUF_Text_Combiner(MUFilter):
         text = ""
         for c in inp.commands:
             contin = True
-            if(c.type == "Text"):
+            if c.type == "Text":
                 text += c.text
                 contin = False
             else:
-                if(text != ""):
+                if text != "":
                     ff = TextCommand(text)
                     new.append(ff)
                     text = ""
             if contin:
                 new.append(c)
-        if(text != ""):
+        if text != "":
             ff = TextCommand(text)
             new.append(ff)
         inp.commands = new
@@ -172,12 +172,12 @@ class MUF_URL_Handler(MUFilter):
         new = []
         for c in inp.commands:
             contin = True
-            if(c.type == "Text"):
+            if c.type == "Text":
                 contin = False
                 beat = 0
                 res = self.ur.split(c.text)
                 for tt in res:
-                    if(beat == 0):
+                    if beat == 0:
                         ff = TextCommand(tt)
                         new.append(ff)
                         beat = 1
@@ -204,14 +204,14 @@ class MUF_MXP_Send_Handler(MUFilter):
         new = []
         for c in inp.commands:
             contin = True
-            if(c.type == "Tag"):
-                if(c.tagtype.lower() == "send"):
+            if c.type == "Tag":
+                if c.tagtype.lower() == "send":
                     ff = ContextCommand()
                     ff.tag = c
                     new.append(ff)
 
-            if(c.type == "EndTag"):
-                if(c.tagtype.lower() == "send"):
+            if c.type == "EndTag":
+                if c.tagtype.lower() == "send":
                     ff = ContextEndCommand()
                     new.append(ff)
 

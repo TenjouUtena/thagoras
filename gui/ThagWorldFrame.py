@@ -171,11 +171,11 @@ class ThagOutputWindow(object):
 
     def ShowInfo(self, evt, player):
         if not self.infowindow:
-            newWindow = ThagPersonInfo(self, self.world.world.profiles, player)
+            newWindow = ThagPersonInfo(self, self.world.profiles, player)
             self.infowindow = newWindow
             newWindow.Show()
         else:
-            self.infowindow.updateInfo(self.world.world.profiles)
+            self.infowindow.updateInfo(self.world.profiles)
             self.infowindow.Select(player)
             self.infowindow.buildData()
             self.infowindow.Show()
@@ -300,6 +300,7 @@ class ThagOutputPanel(ThagOutputWindow, ThagOutputPanelBase):
         self.world = kwds['world']
         kwds.pop('world')
         ThagOutputPanelBase.__init__(self, *args, **kwds)
+        ThagOutputWindow.__init__(self, *args, **kwds)
         self.setColors()
 
         # Set default Style
@@ -328,7 +329,7 @@ class ThagOutputPanel(ThagOutputWindow, ThagOutputPanelBase):
 class ThagChannelOutputWindow(ThagOutputWindow):
     def __init__(self, *args, **kwds):
         self.telnet = None
-        self.infowindow = None
+
 
         self.commandHistory = []
         self.isRecall = False
@@ -350,8 +351,7 @@ class ThagChannelOutputWindow(ThagOutputWindow):
         tab, _ = self.chan_notebook.HitTest(evt.GetPosition())
         whatTab = self.chan_notebook.GetPageText(tab)
         mnu = wx.Menu()
-        cwdix = wx.NewId()
-        citem = mnu.Append(cwdix, "Close")
+        citem = mnu.Append(wx.NewId(), "Close")
         mnu.Bind(wx.EVT_MENU, lambda ee: self.TabClose(ee, whatTab, tab), citem)
         self.chan_notebook.PopupMenu(mnu, self.chan_notebook.ScreenToClient(wx.GetMousePosition()))
         mnu.Destroy()
@@ -540,7 +540,7 @@ class ThagPersonInfo(ThagPersonInfoBase):
 
     def Select(self, selected):
         n = self.person_selector.FindString(selected)
-        if(n):
+        if n:
             self.person_selector.SetSelection(n)
 
     def OnClose(self, evt):
@@ -565,7 +565,7 @@ class ThagPersonInfo(ThagPersonInfoBase):
 
         person = self.person_selector.GetStringSelection()
 
-        if(not self.info.has_key(person)):
+        if not self.info.has_key(person):
             return
 
         for page, info in self.info[person].iteritems():
@@ -606,10 +606,10 @@ class ThagPersonInfoPane(ThagPersonInfoPaneBase):
         ##TODO:  Look for picture URLs
         ## Find a picture URL to show
         ### If we found a 'picture' 
-        if(picture):
+        if picture:
             rx = re.compile(urlre)
             mm = rx.search(self.info[picture])
-            if(mm):
+            if mm:
                 tt = threading.Thread(target=self.showPicture, args=(mm.group(1),))
                 tt.start()
                 #self.showPicture(mm.group(1))
